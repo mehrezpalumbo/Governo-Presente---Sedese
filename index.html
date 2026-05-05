@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SEDESE — Painel Gov. Presente 3</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#F5F3EE;--surface:#FFFFFF;--surface2:#EDEBE5;--border:#D8D5CE;
+  --text:#1A1916;--text2:#6B6860;--text3:#9E9C97;
+  --accent:#1B4D3E;--accent-light:#E8F0ED;
+  --accent2:#C8602A;--accent2-light:#FAF0EB;
+  --yellow:#E8C84A;--yellow-light:#FBF7E4;
+  --blue:#2A5C8A;--blue-light:#E8EFF7;
+  --radius:10px;--radius-lg:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+.header{background:var(--accent);padding:20px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.header-left{display:flex;align-items:center;gap:14px}
+.header-logo{width:40px;height:40px;background:rgba(255,255,255,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:#fff;letter-spacing:-0.5px}
+.header-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:600;color:#fff}
+.header-sub{font-size:12px;color:rgba(255,255,255,0.6);margin-top:2px}
+.header-right{display:flex;align-items:center;gap:10px}
+.header-badge{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.85);font-size:11px;padding:4px 10px;border-radius:99px}
+.btn-refresh{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.25);color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;padding:6px 14px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background 0.15s}
+.btn-refresh:hover{background:rgba(255,255,255,0.2)}
+.btn-refresh.loading .spin{animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.container{max-width:1300px;margin:0 auto;padding:28px 24px}
+
+/* LOADING STATE */
+.loading-overlay{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;gap:16px}
+.loading-spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite}
+.loading-text{font-size:14px;color:var(--text3)}
+.error-box{background:#FEF2F2;border:1px solid #FECACA;border-radius:var(--radius-lg);padding:24px;color:#991B1B;font-size:14px;line-height:1.6}
+.error-box strong{display:block;margin-bottom:6px;font-size:15px}
+.error-box code{background:#FEE2E2;padding:2px 6px;border-radius:4px;font-size:12px;font-family:monospace}
+
+/* LAST UPDATE */
+.last-update{font-size:11px;color:var(--text3);text-align:right;margin-bottom:12px}
+.last-update span{color:var(--accent);font-weight:500}
+
+/* FILTERS */
+.filters-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:22px}
+.filters-title{font-family:'Syne',sans-serif;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:12px}
+.filters-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.filter-group label{font-size:11px;color:var(--text2);display:block;margin-bottom:4px;font-weight:500}
+.filter-group select{width:100%;padding:8px 28px 8px 10px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:8px;outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%236B6860' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center}
+.filter-group select:focus{border-color:var(--accent)}
+.filter-actions{display:flex;align-items:flex-end;gap:8px}
+.btn-clear{padding:8px 14px;font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text2);background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;white-space:nowrap;height:36px}
+.btn-clear:hover{background:var(--border)}
+.filter-count{font-size:12px;color:var(--text3);margin-top:10px;border-top:1px solid var(--border);padding-top:10px}
+.filter-count span{color:var(--accent);font-weight:500}
+
+/* STATUS PILLS */
+.status-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.status-pill{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:6px 14px;font-size:12px;color:var(--text2);cursor:pointer;transition:all 0.15s}
+.status-pill:hover,.status-pill.active{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
+.status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dot-green{background:#2E9E6B}.dot-orange{background:#C8602A}.dot-blue{background:#2A5C8A}.dot-gray{background:#9E9C97}
+.status-pill .count{font-weight:600;color:var(--text);margin-left:2px}
+
+/* METRICS */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+.metric-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;position:relative;overflow:hidden}
+.metric-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.metric-card.m-green::before{background:var(--accent)}
+.metric-card.m-orange::before{background:var(--accent2)}
+.metric-card.m-yellow::before{background:var(--yellow)}
+.metric-card.m-blue::before{background:var(--blue)}
+.metric-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;font-weight:500;margin-bottom:8px}
+.metric-value{font-family:'Syne',sans-serif;font-size:28px;font-weight:700;color:var(--text);line-height:1}
+.metric-sub{font-size:11px;color:var(--text3);margin-top:5px}
+
+/* CHARTS */
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px}
+.chart-card-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;color:var(--text);margin-bottom:16px}
+.bar-item{margin-bottom:10px}
+.bar-row{display:flex;align-items:center;gap:8px}
+.bar-label{font-size:12px;color:var(--text2);width:150px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-track{flex:1;height:8px;background:var(--surface2);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width 0.5s ease}
+.bar-val{font-size:11px;color:var(--text3);width:36px;text-align:right;flex-shrink:0}
+
+/* TABLE */
+.table-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.table-header{padding:18px 20px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:10px}
+.table-header-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:600}
+.search-input{padding:7px 12px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:8px;outline:none;width:240px}
+.search-input:focus{border-color:var(--accent)}
+.table-wrap{overflow-x:auto;max-height:500px;overflow-y:auto}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead{position:sticky;top:0;z-index:2;background:var(--surface)}
+th{padding:10px 14px;text-align:left;font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none}
+th:hover{color:var(--text2)}
+th.sort-asc::after{content:' ↑'}
+th.sort-desc::after{content:' ↓'}
+td{padding:11px 14px;border-bottom:1px solid var(--surface2);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg)}
+.td-mun{font-weight:500;white-space:nowrap}
+.td-projeto{font-weight:500;max-width:190px}
+.td-produto{color:var(--text2);max-width:220px;font-size:12px;line-height:1.4}
+.td-val{font-variant-numeric:tabular-nums;white-space:nowrap}
+.td-num{font-variant-numeric:tabular-nums;color:var(--text2)}
+
+/* BADGES */
+.badge{display:inline-block;font-size:10px;font-weight:500;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.badge-green{background:var(--accent-light);color:var(--accent)}
+.badge-orange{background:var(--accent2-light);color:var(--accent2)}
+.badge-blue{background:var(--blue-light);color:var(--blue)}
+.badge-gray{background:var(--surface2);color:var(--text2)}
+.tag-idene{background:#EEF2FB;color:#2A4BAA;font-size:10px;font-weight:500;padding:1px 6px;border-radius:4px}
+.tag-sedese{background:var(--accent-light);color:var(--accent);font-size:10px;font-weight:500;padding:1px 6px;border-radius:4px}
+
+/* PAGINATION */
+.table-footer{padding:12px 20px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);font-size:12px;color:var(--text3)}
+.pagination{display:flex;gap:4px}
+.page-btn{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:6px;cursor:pointer;font-size:12px;color:var(--text2);background:var(--surface);transition:all 0.1s;font-family:'DM Sans',sans-serif}
+.page-btn:hover{border-color:var(--accent);color:var(--accent)}
+.page-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.page-btn:disabled{opacity:0.4;cursor:not-allowed}
+
+/* TOOLTIP */
+.tooltip-wrap{position:relative}
+.tooltip-wrap:hover .tooltip{display:block}
+.tooltip{display:none;position:absolute;bottom:calc(100% + 6px);left:0;background:var(--text);color:#fff;font-size:11px;padding:5px 9px;border-radius:6px;white-space:normal;max-width:280px;z-index:99;line-height:1.5;pointer-events:none}
+
+@media(max-width:900px){
+  .metrics{grid-template-columns:repeat(2,1fr)}
+  .charts-row{grid-template-columns:1fr}
+  .filters-grid{grid-template-columns:repeat(2,1fr)}
+  .header{padding:16px 18px}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="header-logo">SE</div>
+    <div>
+      <div class="header-title">SEDESE — Painel Gov. Presente 3</div>
+      <div class="header-sub">Entregas propostas · Dados ao vivo da planilha</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="header-badge" id="header-count">Carregando...</div>
+    <button class="btn-refresh" id="btn-refresh" onclick="loadData()">
+      <svg class="spin" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 12a9 9 0 0 1 9-9 9 9 0 0 1 6.36 2.64L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9 9 0 0 1-6.36-2.64L3 16"/><path d="M3 21v-5h5"/></svg>
+      Atualizar
+    </button>
+  </div>
+</div>
+
+<div class="container" id="main-content">
+  <div class="loading-overlay" id="loading-state">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Carregando dados da planilha...</div>
+  </div>
+</div>
+
+<script>
+// ─── CONFIGURAÇÃO ────────────────────────────────────────────────────────────
+const SHEET_ID   = '1dWZ8EBvlvakHEsZ25ViiKBq4LNWCwZEL';
+const SHEET_NAME = 'Entregas Propostas Governo Pres';
+const API_KEY    = 'AIzaSyAbRm0ZXx_QfqaGs1POd7WcykeE0fEjNtI';  // ← substitua pela sua chave
+// ─────────────────────────────────────────────────────────────────────────────
+
+let RAW = [];
+let filtered = [];
+let currentPage = 1;
+let sortCol = null;
+let sortDir = 1;
+let activeStatus = null;
+const PAGE_SIZE = 30;
+
+// ── Classificar status ───────────────────────────────────────────────────────
+function classifyStatus(s) {
+  if (!s) return 'A definir';
+  const t = s.toLowerCase().trim();
+  if (t.includes('inauguração') || t.includes('viável') || t.startsWith('sim')) return 'Viável/Confirmada';
+  if (t.includes('não viável') || t.includes('não previsto') || t.includes('entrega não')) return 'Não viável';
+  if (t.includes('vistoria') || t.includes('visita')) return 'Visita/Vistoria';
+  return 'A definir';
+}
+
+// ── Formatar data vinda do Sheets (serial ou string) ─────────────────────────
+function fmtDate(v) {
+  if (!v) return '—';
+  // Serial do Excel/Sheets
+  if (typeof v === 'number') {
+    const d = new Date(Math.round((v - 25569) * 86400 * 1000));
+    return d.toLocaleDateString('pt-BR');
+  }
+  // Já é string ISO ou BR
+  const iso = v.match(/^\d{4}-\d{2}-\d{2}/);
+  if (iso) {
+    const [y,m,d] = v.slice(0,10).split('-');
+    return `${d}/${m}/${y}`;
+  }
+  return v;
+}
+
+// ── Formatar valor ────────────────────────────────────────────────────────────
+function fmtVal(v) {
+  if (!v || v === 0 || isNaN(v)) return '—';
+  if (v >= 1e6) return 'R$ ' + (v/1e6).toFixed(1) + 'M';
+  if (v >= 1e3) return 'R$ ' + (v/1e3).toFixed(0) + 'k';
+  return 'R$ ' + Math.round(v).toLocaleString('pt-BR');
+}
+
+function fmtPessoas(v) {
+  if (!v || v === 0) return '—';
+  if (v >= 1000) return (v/1000).toFixed(1) + ' mil';
+  return Math.round(v).toLocaleString('pt-BR');
+}
+
+// ── Carregar dados do Google Sheets ──────────────────────────────────────────
+async function loadData() {
+  const btn = document.getElementById('btn-refresh');
+  btn.classList.add('loading');
+  btn.disabled = true;
+
+  const range = encodeURIComponent(`'${SHEET_NAME}'!A:T`);
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}?key=${API_KEY}`;
+
+  try {
+    const res = await fetch(url);
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error?.message || `HTTP ${res.status}`);
+    }
+    const data = await res.json();
+    const rows = data.values || [];
+    if (rows.length < 2) throw new Error('Nenhum dado encontrado na aba.');
+
+    // Primeira linha = cabeçalhos
+    // Colunas: A=0 ID, B=1 Secretaria, C=2 Orgao, D=3 DataEntrega, E=4 Projeto,
+    //          F=5 Produto, G=6 Qtd, H=7 Municipio, I=8 Pessoas, J=9 Valor,
+    //          K=10 Origem, L=11 Obs, M=12 Macrorregiao, N=13 DataViagem,
+    //          O=14 CidadeSede, P=15 Devolutiva, Q=16 Manifestacao, R=17 ObsComp
+    RAW = rows.slice(1).map((r, idx) => ({
+      id:           r[0]  || String(idx+1),
+      orgao:        (r[2]  || '').trim(),
+      data_entrega: fmtDate(r[3]),
+      projeto:      (r[4]  || '').trim(),
+      produto:      (r[5]  || '').trim(),
+      qtd:          parseFloat(r[6])  || 0,
+      municipio:    (r[7]  || '').trim(),
+      pessoas:      parseFloat(r[8])  || 0,
+      valor:        parseFloat((r[9]  || '0').toString().replace(/[^0-9.,\-]/g,'').replace(',','.')) || 0,
+      origem:       (r[10] || '').trim(),
+      macrorregiao: (r[12] || '').trim(),
+      data_viagem:  (r[13] || '').trim(),
+      cidade_sede:  (r[14] || '').trim(),
+      devolutiva:   (r[15] || '').trim(),
+      manifestacao: (r[16] || '').trim(),
+      obs_comp:     (r[17] || '').trim(),
+      status:       classifyStatus(r[16]),
+    })).filter(r => r.municipio || r.projeto);
+
+    filtered = [...RAW];
+    activeStatus = null;
+    currentPage = 1;
+
+    // Atualiza header
+    document.getElementById('header-count').textContent = `${RAW.length} entregas · ${new Set(RAW.map(r=>r.municipio).filter(Boolean)).size} municípios`;
+
+    // Timestamp
+    const now = new Date().toLocaleString('pt-BR');
+    renderUI(now);
+
+  } catch(e) {
+    showError(e.message);
+  } finally {
+    btn.classList.remove('loading');
+    btn.disabled = false;
+  }
+}
+
+function showError(msg) {
+  document.getElementById('main-content').innerHTML = `
+    <div class="error-box">
+      <strong>Não foi possível carregar os dados</strong>
+      ${msg}<br><br>
+      Verifique se a <code>API_KEY</code> foi configurada corretamente no arquivo <code>index.html</code>
+      e se a planilha está compartilhada como "qualquer pessoa com o link pode ver".
+    </div>`;
+}
+
+// ── Renderizar toda a UI ──────────────────────────────────────────────────────
+function renderUI(timestamp) {
+  document.getElementById('main-content').innerHTML = `
+    <div class="last-update">Última atualização: <span>${timestamp}</span></div>
+
+    <div class="filters-bar">
+      <div class="filters-title">Filtros</div>
+      <div class="filters-grid">
+        <div class="filter-group">
+          <label>Macrorregião</label>
+          <select id="f-macro" onchange="applyFilters()"><option value="">Todas</option></select>
+        </div>
+        <div class="filter-group">
+          <label>Cidade Sede</label>
+          <select id="f-sede" onchange="applyFilters()"><option value="">Todas</option></select>
+        </div>
+        <div class="filter-group">
+          <label>Projeto / Iniciativa</label>
+          <select id="f-projeto" onchange="applyFilters()"><option value="">Todos</option></select>
+        </div>
+        <div class="filter-group">
+          <label>Órgão</label>
+          <select id="f-orgao" onchange="applyFilters()">
+            <option value="">Todos</option>
+            <option value="SEDESE">SEDESE</option>
+            <option value="IDENE">IDENE</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Origem do Recurso</label>
+          <select id="f-origem" onchange="applyFilters()"><option value="">Todas</option></select>
+        </div>
+        <div class="filter-actions">
+          <label style="visibility:hidden;font-size:11px">‎</label>
+          <button class="btn-clear" onclick="clearFilters()">Limpar filtros</button>
+        </div>
+      </div>
+      <div class="filter-count">Exibindo <span id="count-shown">${RAW.length}</span> de <span>${RAW.length}</span> entregas</div>
+    </div>
+
+    <div class="status-row" id="status-pills"></div>
+
+    <div class="metrics">
+      <div class="metric-card m-green">
+        <div class="metric-label">Entregas</div>
+        <div class="metric-value" id="m-total">${RAW.length}</div>
+        <div class="metric-sub">registros filtrados</div>
+      </div>
+      <div class="metric-card m-blue">
+        <div class="metric-label">Municípios</div>
+        <div class="metric-value" id="m-mun">${new Set(RAW.map(r=>r.municipio).filter(Boolean)).size}</div>
+        <div class="metric-sub">municípios únicos</div>
+      </div>
+      <div class="metric-card m-yellow">
+        <div class="metric-label">Estimativa de atendidos</div>
+        <div class="metric-value" id="m-pessoas">${fmtPessoas(RAW.reduce((a,r)=>a+(r.pessoas||0),0))}</div>
+        <div class="metric-sub">pessoas estimadas</div>
+      </div>
+      <div class="metric-card m-orange">
+        <div class="metric-label">Investimento total</div>
+        <div class="metric-value" id="m-valor">${fmtVal(RAW.reduce((a,r)=>a+(r.valor||0),0))}</div>
+        <div class="metric-sub">soma dos valores informados</div>
+      </div>
+    </div>
+
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-card-title">Entregas por macrorregião</div>
+        <div id="chart-macro"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-title">Top projetos / iniciativas</div>
+        <div id="chart-proj"></div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-header">
+        <div class="table-header-title">Detalhamento das entregas</div>
+        <input class="search-input" type="text" id="search" placeholder="Buscar município, projeto..." oninput="applyFilters()">
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th onclick="sortBy('municipio')">Município</th>
+              <th onclick="sortBy('macrorregiao')">Macrorregião</th>
+              <th onclick="sortBy('projeto')">Projeto</th>
+              <th>Produto</th>
+              <th onclick="sortBy('orgao')">Órgão</th>
+              <th onclick="sortBy('data_entrega')">Data entrega</th>
+              <th>Viagem na região</th>
+              <th onclick="sortBy('pessoas')">Atendidos</th>
+              <th onclick="sortBy('valor')">Valor (R$)</th>
+              <th onclick="sortBy('status')">Status</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+      <div class="table-footer">
+        <div id="page-info"></div>
+        <div class="pagination" id="pagination"></div>
+      </div>
+    </div>`;
+
+  populateSelects();
+  renderStatusPills();
+  renderMetrics();
+  renderCharts();
+  renderTable();
+}
+
+// ── Selects ───────────────────────────────────────────────────────────────────
+function getUnique(key) {
+  return [...new Set(RAW.map(r => r[key]).filter(Boolean).map(s => s.trim()))].sort();
+}
+
+function populateSelects() {
+  const fill = (id, values) => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    values.forEach(v => {
+      const o = document.createElement('option');
+      o.value = v; o.textContent = v; sel.appendChild(o);
+    });
+  };
+  fill('f-macro',   getUnique('macrorregiao'));
+  fill('f-sede',    getUnique('cidade_sede'));
+  fill('f-projeto', getUnique('projeto'));
+  fill('f-origem',  getUnique('origem'));
+}
+
+// ── Filtros ───────────────────────────────────────────────────────────────────
+function applyFilters() {
+  const macro   = (document.getElementById('f-macro')   || {}).value || '';
+  const sede    = (document.getElementById('f-sede')    || {}).value || '';
+  const proj    = (document.getElementById('f-projeto') || {}).value || '';
+  const orgao   = (document.getElementById('f-orgao')   || {}).value || '';
+  const origem  = (document.getElementById('f-origem')  || {}).value || '';
+  const q       = ((document.getElementById('search')   || {}).value || '').toLowerCase().trim();
+
+  filtered = RAW.filter(r => {
+    if (macro   && r.macrorregiao.trim() !== macro)  return false;
+    if (sede    && r.cidade_sede.trim()  !== sede)   return false;
+    if (proj    && r.projeto.trim()      !== proj)   return false;
+    if (orgao   && r.orgao.trim()        !== orgao)  return false;
+    if (origem  && r.origem.trim()       !== origem) return false;
+    if (activeStatus && r.status !== activeStatus)   return false;
+    if (q) {
+      const hay = (r.municipio + r.projeto + r.produto + r.macrorregiao + r.cidade_sede).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  currentPage = 1;
+  const cs = document.getElementById('count-shown');
+  if (cs) cs.textContent = filtered.length;
+  renderStatusPills();
+  renderMetrics();
+  renderCharts();
+  renderTable();
+}
+
+function clearFilters() {
+  ['f-macro','f-sede','f-projeto','f-orgao','f-origem'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  const s = document.getElementById('search');
+  if (s) s.value = '';
+  activeStatus = null;
+  filtered = [...RAW];
+  currentPage = 1;
+  applyFilters();
+}
+
+function toggleStatus(s) {
+  activeStatus = activeStatus === s ? null : s;
+  applyFilters();
+}
+
+// ── Status pills ──────────────────────────────────────────────────────────────
+function renderStatusPills() {
+  const el = document.getElementById('status-pills');
+  if (!el) return;
+  const cnt = {};
+  filtered.forEach(r => { cnt[r.status] = (cnt[r.status]||0)+1; });
+  const defs = [
+    { key:'Viável/Confirmada', label:'Viável / Confirmada', dot:'dot-green' },
+    { key:'Visita/Vistoria',   label:'Visita / Vistoria',   dot:'dot-blue'  },
+    { key:'A definir',         label:'A definir',           dot:'dot-gray'  },
+    { key:'Não viável',        label:'Não viável',          dot:'dot-orange'},
+  ];
+  el.innerHTML = defs.map(d =>
+    `<div class="status-pill${activeStatus===d.key?' active':''}" data-status="${d.key}" onclick="toggleStatus('${d.key}')">
+       <span class="status-dot ${d.dot}"></span>${d.label}<span class="count">${cnt[d.key]||0}</span>
+     </div>`
+  ).join('');
+}
+
+// ── Métricas ──────────────────────────────────────────────────────────────────
+function renderMetrics() {
+  const set = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
+  set('m-total', filtered.length);
+  set('m-mun',   new Set(filtered.map(r=>r.municipio).filter(Boolean)).size);
+  set('m-pessoas', fmtPessoas(filtered.reduce((a,r)=>a+(r.pessoas||0),0)));
+  set('m-valor',   fmtVal(filtered.reduce((a,r)=>a+(r.valor||0),0)));
+}
+
+// ── Gráficos ──────────────────────────────────────────────────────────────────
+const BAR_COLORS = ['#1B4D3E','#2E9E6B','#5DC49A','#A8DFC8','#2A5C8A','#6B9EC8','#C8602A','#E8925A'];
+
+function renderBar(label, val, max, color) {
+  const pct = max > 0 ? Math.round((val/max)*100) : 0;
+  return `<div class="bar-item">
+    <div class="bar-row">
+      <span class="bar-label" title="${label}">${label}</span>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${color}"></div></div>
+      <span class="bar-val">${val}</span>
+    </div>
+  </div>`;
+}
+
+function renderCharts() {
+  const macro = {};
+  filtered.forEach(r => { if(r.macrorregiao) macro[r.macrorregiao]=(macro[r.macrorregiao]||0)+1; });
+  const ms = Object.entries(macro).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const mm = ms[0]?ms[0][1]:1;
+  const mEl = document.getElementById('chart-macro');
+  if (mEl) mEl.innerHTML = ms.map(([k,v],i)=>renderBar(k,v,mm,BAR_COLORS[i%BAR_COLORS.length])).join('') || '<p style="font-size:13px;color:var(--text3)">Sem dados</p>';
+
+  const proj = {};
+  filtered.forEach(r => {
+    if (!r.projeto) return;
+    const k = r.projeto.length > 32 ? r.projeto.slice(0,32)+'…' : r.projeto;
+    proj[k] = (proj[k]||0)+1;
+  });
+  const ps = Object.entries(proj).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const pm = ps[0]?ps[0][1]:1;
+  const pEl = document.getElementById('chart-proj');
+  if (pEl) pEl.innerHTML = ps.map(([k,v],i)=>renderBar(k,v,pm,BAR_COLORS[i%BAR_COLORS.length])).join('') || '<p style="font-size:13px;color:var(--text3)">Sem dados</p>';
+}
+
+// ── Tabela ────────────────────────────────────────────────────────────────────
+function statusBadge(s) {
+  const map = {
+    'Viável/Confirmada':['badge-green','Viável'],
+    'Visita/Vistoria':  ['badge-blue','Visita'],
+    'A definir':        ['badge-gray','A definir'],
+    'Não viável':       ['badge-orange','Não viável'],
+  };
+  const [cls,lbl] = map[s]||['badge-gray',s];
+  return `<span class="badge ${cls}">${lbl}</span>`;
+}
+
+function orgaoTag(o) {
+  return o === 'IDENE'
+    ? `<span class="tag-idene">IDENE</span>`
+    : `<span class="tag-sedese">SEDESE</span>`;
+}
+
+function sortBy(col) {
+  if (sortCol === col) sortDir *= -1;
+  else { sortCol = col; sortDir = 1; }
+  filtered.sort((a,b) => {
+    let va = a[col]||'', vb = b[col]||'';
+    if (typeof va === 'number') return (va - vb) * sortDir;
+    return va.toString().localeCompare(vb.toString(), 'pt-BR') * sortDir;
+  });
+  currentPage = 1;
+  renderTable();
+  // Update header arrows
+  document.querySelectorAll('th').forEach(th => {
+    th.classList.remove('sort-asc','sort-desc');
+    if (th.getAttribute('onclick') === `sortBy('${col}')`) {
+      th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
+    }
+  });
+}
+
+function renderTable() {
+  const total = filtered.length;
+  const totalPages = Math.max(1, Math.ceil(total/PAGE_SIZE));
+  currentPage = Math.min(currentPage, totalPages);
+  const rows = filtered.slice((currentPage-1)*PAGE_SIZE, currentPage*PAGE_SIZE);
+
+  const tbody = document.getElementById('table-body');
+  if (!tbody) return;
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td class="td-mun">${r.municipio||'—'}</td>
+      <td style="font-size:11px;color:var(--text3);white-space:nowrap">${r.macrorregiao||'—'}</td>
+      <td class="td-projeto tooltip-wrap">
+        ${r.projeto.length>35?r.projeto.slice(0,35)+'…':r.projeto}
+        ${r.projeto.length>35?`<span class="tooltip">${r.projeto}</span>`:''}
+      </td>
+      <td class="td-produto tooltip-wrap">
+        ${r.produto.length>55?r.produto.slice(0,55)+'…':r.produto}
+        ${r.produto.length>55?`<span class="tooltip">${r.produto}</span>`:''}
+      </td>
+      <td>${orgaoTag(r.orgao)}</td>
+      <td class="td-num" style="white-space:nowrap">${r.data_entrega||'—'}</td>
+      <td style="font-size:11px;color:var(--text3);white-space:nowrap">${r.data_viagem||'—'}</td>
+      <td class="td-num">${r.pessoas>0?Math.round(r.pessoas).toLocaleString('pt-BR'):'—'}</td>
+      <td class="td-val">${fmtVal(r.valor)}</td>
+      <td>${statusBadge(r.status)}</td>
+    </tr>`).join('');
+
+  const pi = document.getElementById('page-info');
+  if (pi) pi.textContent = `Página ${currentPage} de ${totalPages} · ${total} registros`;
+
+  const pag = document.getElementById('pagination');
+  if (!pag) return;
+  let html = `<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
+  const range = [];
+  for (let i=1; i<=totalPages; i++) {
+    if (i===1||i===totalPages||Math.abs(i-currentPage)<=2) range.push(i);
+    else if (range[range.length-1]!=='…') range.push('…');
+  }
+  range.forEach(p => {
+    if (p==='…') html += `<span style="padding:0 4px;color:var(--text3);font-size:12px">…</span>`;
+    else html += `<button class="page-btn${p===currentPage?' active':''}" onclick="goPage(${p})">${p}</button>`;
+  });
+  html += `<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>›</button>`;
+  pag.innerHTML = html;
+}
+
+function goPage(p) {
+  const total = Math.max(1, Math.ceil(filtered.length/PAGE_SIZE));
+  if (p<1||p>total) return;
+  currentPage = p;
+  renderTable();
+  document.querySelector('.table-wrap')?.scrollTo(0,0);
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+loadData();
+</script>
+</body>
+</html>
