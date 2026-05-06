@@ -65,9 +65,9 @@ Não é necessário alterar nenhum arquivo do painel.
 
 ## Planilha conectada
 
-- **ID da planilha:** `1dWZ8EBvlvakHEsZ25ViiKBq4LNWCwZEL`
+- **ID da planilha:** `1yZsTc6VtPImD8OuxhGwe7O_OE6SbMa2depVsd_tm21k`
 - **Aba utilizada:** `Entregas Propostas Governo Pres`
-- **Link:** https://docs.google.com/spreadsheets/d/1dWZ8EBvlvakHEsZ25ViiKBq4LNWCwZEL
+- **Link:** https://docs.google.com/spreadsheets/d/1yZsTc6VtPImD8OuxhGwe7O_OE6SbMa2depVsd_tm21k
 
 A planilha deve estar com permissão **"Qualquer pessoa com o link pode ver"**.
 
