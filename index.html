@@ -286,11 +286,12 @@ let activeUrgencia = null;
 let activePeriodo = 30;
 const PAGE_SIZE = 30;
 
-// ── Parse de data (DD/MM/YYYY ou YYYY-MM-DD ou serial) ────────────────────────
+// ── Parse de data (DD/MM/YYYY ou YYYY-MM-DD ou serial Excel) ─────────────────
 function parseDate(v) {
   if (!v) return null;
   if (v instanceof Date) return isNaN(v) ? null : v;
   if (typeof v === 'number') {
+    // Serial Excel: 44927 = 01/01/2023
     const d = new Date(Math.round((v - 25569) * 86400 * 1000));
     return isNaN(d) ? null : d;
   }
@@ -309,12 +310,39 @@ function fmtDateBR(d) {
   return d.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit', year:'numeric'});
 }
 
-// Parse "18/05 a 22/05" ou "18/5 a 24/5/2026" → start Date
-function parseViagemDate(s, year=2026) {
-  if (!s) return null;
-  const m = s.match(/(\d{1,2})[\/.](\d{1,2})/);
-  if (m) return new Date(year, +m[2]-1, +m[1]);
-  return null;
+// Parse datas de viagem no formato "18/05 a 22/05", "1º/6 a 7/6/2026",
+// "27/04 a01/05" (sem espaço), serial numérico, ou objeto Date
+// Retorna a data de INÍCIO da viagem
+function parseViagemDate(v) {
+  if (!v) return null;
+  if (v instanceof Date && !isNaN(v)) return v;
+  if (typeof v === 'number') {
+    const d = new Date(Math.round((v - 25569) * 86400 * 1000));
+    return isNaN(d) ? null : d;
+  }
+  let s = v.toString().trim();
+  // Normalizar "1º/" → "1/" e remover "º"
+  s = s.replace(/(\d)º\//g, '$1/').replace(/º/g, '');
+  // Extrair apenas o primeiro conjunto de DD/MM ou DD/MM/YYYY
+  // Padrão: começa com dígitos, barra, dígitos (ignorar o que vem depois de " a")
+  const m = s.match(/^(\d{1,2})[\/.](\d{1,2})(?:[\/.](\d{2,4}))?/);
+  if (!m) return null;
+  const day = +m[1], month = +m[2];
+  let year = m[3] ? +m[3] : 2026;
+  if (year < 100) year += 2000;
+  try { return new Date(year, month - 1, day); } catch(e) { return null; }
+}
+
+// Formatar data de viagem para exibição
+function fmtViagemDisplay(s) {
+  if (!s) return '';
+  // Se for número (serial), converter para data
+  if (typeof s === 'number') {
+    const d = parseViagemDate(s);
+    return d ? fmtDateBR(d) : '';
+  }
+  // Retornar a string original, apenas limpando º
+  return s.toString().replace(/(\d)º\//g, '$1/').trim();
 }
 
 function classifyStatus(s) {
@@ -340,6 +368,26 @@ function fmtPessoas(v) {
 function fmtPessoasNum(v) {
   if (!v || v===0) return '—';
   return Math.round(v).toLocaleString('pt-BR');
+}
+
+// Parser de valor monetário brasileiro: "1.500,50" → 1500.50
+// A Sheets API retorna números como strings localizadas em pt-BR
+function parseValorBR(v) {
+  if (!v && v !== 0) return 0;
+  const s = v.toString().trim();
+  if (!s || s === '0') return 0;
+  // Remove R$, espaços, caracteres não numéricos exceto , e .
+  let clean = s.replace(/R\$\s*/g, '').replace(/\s/g, '');
+  // Formato BR: pontos como separador de milhar, vírgula como decimal
+  // ex: "1.500.000,50" → remove pontos → "1500000,50" → troca vírgula → "1500000.50"
+  // Mas se não tiver vírgula e tiver ponto, pode ser decimal US: "1500.50"
+  if (clean.includes(',')) {
+    // Formato BR: remover pontos de milhar, trocar vírgula por ponto decimal
+    clean = clean.replace(/\./g, '').replace(',', '.');
+  }
+  // Remove qualquer char não numérico restante exceto ponto e sinal
+  clean = clean.replace(/[^0-9.\-]/g, '');
+  return parseFloat(clean) || 0;
 }
 
 // ── Carregar dados ────────────────────────────────────────────────────────────
@@ -376,10 +424,11 @@ async function loadData() {
         qtd:          parseFloat(r[6]) || 0,
         municipio:    (r[7]  || '').trim(),
         pessoas:      parseFloat(r[8]) || 0,
-        valor:        parseFloat((r[9]||'0').toString().replace(/[^0-9.,\-]/g,'').replace(',','.')) || 0,
+        valor:        parseValorBR(r[9]),
         origem:       (r[10] || '').trim(),
         macrorregiao: (r[12] || '').trim(),
-        data_viagem:  (r[13] || '').trim(),
+        data_viagem:  fmtViagemDisplay(r[13]),
+        viagem_dt:    parseViagemDate(r[13]),
         cidade_sede:  (r[14] || '').trim(),
         devolutiva:   (r[15] || '').trim(),
         manifestacao: (r[16] || '').trim(),
@@ -420,8 +469,6 @@ function renderCurrentTab(timestamp) {
 // BLOCO 1 — ALERTAS / PRÓXIMAS ENTREGAS
 // ═══════════════════════════════════════════════════════════════════════════════
 function renderAlertas(timestamp) {
-  const today = new Date(); today.setHours(0,0,0,0);
-
   document.getElementById('main-content').innerHTML = `
     ${timestamp ? `<div class="last-update">Última atualização: <span>${timestamp}</span></div>` : ''}
     <div class="alertas-header">
@@ -452,9 +499,11 @@ function renderAlertas(timestamp) {
         <div class="urgencia-sub">entregas em 31+ dias</div>
       </div>
     </div>
-    <div id="alert-list-wrap"></div>`;
+    <div id="alert-list-wrap"></div>
+    <div id="viagens-wrap"></div>`;
 
   buildAlertList();
+  buildViagensList();
 }
 
 function setPeriodo(p) {
@@ -471,16 +520,14 @@ function setUrgencia(u) {
 function buildAlertList() {
   const today = new Date(); today.setHours(0,0,0,0);
 
-  // Filtrar por período selecionado
   let pool = RAW.filter(r => {
     if (!r.data_dt) return false;
     const diff = r.diff_dias;
-    if (diff < 0) return false; // passadas
+    if (diff < 0) return false;
     if (activePeriodo !== 999 && diff > activePeriodo) return false;
     return true;
   });
 
-  // Contar urgências (sobre o pool do período)
   const red    = pool.filter(r => r.diff_dias <= 7).length;
   const yellow = pool.filter(r => r.diff_dias > 7 && r.diff_dias <= 30).length;
   const green  = pool.filter(r => r.diff_dias > 30).length;
@@ -490,12 +537,10 @@ function buildAlertList() {
   setN('urg-num-yellow', yellow);
   setN('urg-num-green', green);
 
-  // Filtrar por urgência clicada
   if (activeUrgencia === 'red')    pool = pool.filter(r => r.diff_dias <= 7);
   else if (activeUrgencia === 'yellow') pool = pool.filter(r => r.diff_dias > 7 && r.diff_dias <= 30);
   else if (activeUrgencia === 'green')  pool = pool.filter(r => r.diff_dias > 30);
 
-  // Ordenar por data mais próxima
   pool.sort((a,b) => a.diff_dias - b.diff_dias);
 
   const wrap = document.getElementById('alert-list-wrap');
@@ -533,6 +578,56 @@ function buildAlertList() {
     wrap.innerHTML += `<p style="text-align:center;font-size:12px;color:var(--text3);margin-top:12px">Mostrando 60 de ${pool.length} entregas. Use os filtros de período ou urgência para refinar.</p>`;
   }
 }
+
+// Agrupa viagens únicas por período (data_viagem + cidade_sede) e mostra próximas
+function buildViagensList() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const wrap = document.getElementById('viagens-wrap');
+  if (!wrap) return;
+
+  // Agrupar por data_viagem + cidade_sede
+  const grupos = {};
+  RAW.forEach(r => {
+    if (!r.data_viagem || !r.viagem_dt) return;
+    const vDiff = Math.round((r.viagem_dt - today) / 86400000);
+    if (vDiff < 0) return; // viagem já passou
+    if (activePeriodo !== 999 && vDiff > activePeriodo) return;
+    const key = r.data_viagem + '|' + (r.cidade_sede || '');
+    if (!grupos[key]) {
+      grupos[key] = { data_viagem: r.data_viagem, cidade_sede: r.cidade_sede, viagem_dt: r.viagem_dt, vDiff, municipios: new Set(), macroregiao: r.macrorregiao, count: 0 };
+    }
+    grupos[key].municipios.add(r.municipio);
+    grupos[key].count++;
+  });
+
+  const lista = Object.values(grupos).sort((a,b) => a.vDiff - b.vDiff);
+  if (!lista.length) { wrap.innerHTML = ''; return; }
+
+  const cards = lista.map(g => {
+    const cls = g.vDiff <= 7 ? 'al-red' : g.vDiff <= 30 ? 'al-yellow' : 'al-green';
+    const label = g.vDiff === 0 ? 'Hoje!' : g.vDiff === 1 ? 'Amanhã' : `Em ${g.vDiff} dias`;
+    const muns = [...g.municipios].slice(0,4).join(', ') + (g.municipios.size > 4 ? ` +${g.municipios.size-4}` : '');
+    return `<div class="alert-card ${cls}" style="cursor:default">
+      <div class="alert-top">
+        <div>
+          <div class="alert-mun">✈️ ${g.data_viagem}</div>
+          <div class="alert-regiao">${g.cidade_sede ? 'Sede: ' + g.cidade_sede : g.macroregiao}</div>
+        </div>
+        <span class="alert-dias">${label}</span>
+      </div>
+      <div class="alert-projeto" style="color:var(--text2)">${g.municipios.size} município(s) · ${g.count} entregas</div>
+      <div class="alert-meta"><span class="alert-meta-item" style="font-size:11px;color:var(--text3)">${muns}</span></div>
+    </div>`;
+  }).join('');
+
+  wrap.innerHTML = `
+    <div style="margin-top:28px;margin-bottom:12px">
+      <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px">✈️ Viagens programadas (${lista.length})</div>
+      <div style="font-size:12px;color:var(--text3)">Períodos de visita identificados na planilha pelo mesmo intervalo de datas</div>
+    </div>
+    <div class="alert-list">${cards}</div>`;
+}
+
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // BLOCO 3 — MODO MUNICÍPIO
@@ -614,8 +709,12 @@ function showBriefing(mun) {
   const hoje = new Date(); hoje.setHours(0,0,0,0);
   const itens = RAW.filter(r => r.municipio === mun);
   const reg = (itens[0]||{}).macrorregiao || '';
-  const sede = (itens[0]||{}).cidade_sede || '';
-  const viagem = (itens[0]||{}).data_viagem || '';
+  const sede = [...new Set(itens.map(r=>r.cidade_sede).filter(Boolean))].join(', ');
+  // Coletar todas as viagens distintas (futuras) para o município
+  const viagensDistintas = [...new Map(
+    itens.filter(r => r.data_viagem && r.viagem_dt && Math.round((r.viagem_dt - hoje)/86400000) >= 0)
+         .map(r => [r.data_viagem, {data_viagem: r.data_viagem, cidade_sede: r.cidade_sede, viagem_dt: r.viagem_dt}])
+  ).values()].sort((a,b) => a.viagem_dt - b.viagem_dt);
 
   const totalPessoas = itens.reduce((a,r)=>a+(r.pessoas||0),0);
   const totalValor   = itens.reduce((a,r)=>a+(r.valor||0),0);
@@ -681,12 +780,13 @@ function showBriefing(mun) {
       </div>
     </div>
 
-    ${viagem ? `
+    ${viagensDistintas.length > 0 ? `
+    ${viagensDistintas.map(v => `
     <div class="viagem-card">
       <div class="viagem-card-title">✈️ Viagem programada na região</div>
-      <div class="viagem-card-datas">${viagem}</div>
-      ${sede ? `<div class="viagem-card-sede">Cidade sede: ${sede}</div>` : ''}
-    </div>` : ''}
+      <div class="viagem-card-datas">${v.data_viagem}</div>
+      ${v.cidade_sede ? `<div class="viagem-card-sede">Cidade sede: ${v.cidade_sede}</div>` : ''}
+    </div>`).join('')}` : ''}
 
     <div class="briefing-sections">
       <div class="bs-card">
