@@ -3,36 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SEDESE — Painel Gov. Presente 3</title>
+<title>Governo Presente - Sedese</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-:root {
+:root{
   --bg:#F5F3EE;--surface:#FFFFFF;--surface2:#EDEBE5;--border:#D8D5CE;
   --text:#1A1916;--text2:#6B6860;--text3:#9E9C97;
   --accent:#1B4D3E;--accent-light:#E8F0ED;
   --accent2:#C8602A;--accent2-light:#FAF0EB;
-  --yellow:#E8C84A;--yellow-light:#FBF7E4;
+  --yellow:#C8A520;--yellow-light:#FBF7E4;
   --blue:#2A5C8A;--blue-light:#E8EFF7;
+  --red:#B91C1C;--red-light:#FEF2F2;
   --radius:10px;--radius-lg:16px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 
-.header{background:var(--accent);padding:20px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-.header-left{display:flex;align-items:center;gap:14px}
-.header-logo{width:40px;height:40px;background:rgba(255,255,255,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:#fff;letter-spacing:-0.5px}
-.header-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:600;color:#fff}
-.header-sub{font-size:12px;color:rgba(255,255,255,0.6);margin-top:2px}
-.header-right{display:flex;align-items:center;gap:10px}
-.header-badge{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.85);font-size:11px;padding:4px 10px;border-radius:99px}
-.btn-refresh{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.25);color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;padding:6px 14px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background 0.15s}
+/* HEADER */
+.header{background:var(--accent);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;gap:12px}
+.header-left{display:flex;align-items:center;gap:12px;min-width:0}
+.header-logo{width:38px;height:38px;background:rgba(255,255,255,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:#fff;flex-shrink:0}
+.header-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:600;color:#fff;white-space:nowrap}
+.header-sub{font-size:11px;color:rgba(255,255,255,0.6);margin-top:2px}
+.header-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.header-badge{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.85);font-size:11px;padding:4px 10px;border-radius:99px;white-space:nowrap}
+.btn-refresh{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.25);color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;padding:6px 12px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:5px;transition:background 0.15s;white-space:nowrap}
 .btn-refresh:hover{background:rgba(255,255,255,0.2)}
 .btn-refresh.loading .spin{animation:spin 0.8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-.container{max-width:1300px;margin:0 auto;padding:28px 24px}
+/* TABS */
+.tabs{display:flex;gap:0;background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;position:sticky;top:70px;z-index:99}
+.tab{padding:12px 20px;font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;white-space:nowrap}
+.tab:hover{color:var(--text2)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
 
-/* LOADING STATE */
+.container{max-width:1300px;margin:0 auto;padding:24px 24px}
+
+/* LOADING / ERROR */
 .loading-overlay{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;gap:16px}
 .loading-spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite}
 .loading-text{font-size:14px;color:var(--text3)}
@@ -40,78 +48,163 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .error-box strong{display:block;margin-bottom:6px;font-size:15px}
 .error-box code{background:#FEE2E2;padding:2px 6px;border-radius:4px;font-size:12px;font-family:monospace}
 
-/* LAST UPDATE */
-.last-update{font-size:11px;color:var(--text3);text-align:right;margin-bottom:12px}
+.last-update{font-size:11px;color:var(--text3);text-align:right;margin-bottom:16px}
 .last-update span{color:var(--accent);font-weight:500}
 
-/* FILTERS */
-.filters-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;margin-bottom:22px}
-.filters-title{font-family:'Syne',sans-serif;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:12px}
-.filters-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
-.filter-group label{font-size:11px;color:var(--text2);display:block;margin-bottom:4px;font-weight:500}
-.filter-group select{width:100%;padding:8px 28px 8px 10px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:8px;outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%236B6860' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center}
+/* ── BLOCO 1: ALERTAS ── */
+.alertas-header{margin-bottom:20px}
+.alertas-header h2{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--text)}
+.alertas-header p{font-size:13px;color:var(--text2);margin-top:4px}
+
+.periodo-btns{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.periodo-btn{padding:7px 16px;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:500;color:var(--text2);background:var(--surface);border:1px solid var(--border);border-radius:99px;cursor:pointer;transition:all 0.15s}
+.periodo-btn:hover{border-color:var(--accent);color:var(--accent)}
+.periodo-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+.urgencia-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+.urgencia-card{border-radius:var(--radius-lg);padding:16px 18px;border:1px solid transparent;cursor:pointer;transition:all 0.15s}
+.urgencia-card:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.08)}
+.urgencia-card.urg-red{background:var(--red-light);border-color:#FECACA}
+.urgencia-card.urg-yellow{background:var(--yellow-light);border-color:#FDE68A}
+.urgencia-card.urg-green{background:var(--accent-light);border-color:#A7D7C5}
+.urgencia-card.urg-active{box-shadow:0 0 0 2px var(--accent)}
+.urgencia-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px}
+.urg-red .urgencia-label{color:var(--red)}
+.urg-yellow .urgencia-label{color:#92400E}
+.urg-green .urgencia-label{color:var(--accent)}
+.urgencia-num{font-family:'Syne',sans-serif;font-size:32px;font-weight:700;line-height:1}
+.urg-red .urgencia-num{color:var(--red)}
+.urg-yellow .urgencia-num{color:#92400E}
+.urg-green .urgencia-num{color:var(--accent)}
+.urgencia-sub{font-size:11px;margin-top:4px;color:var(--text2)}
+
+.alert-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+.alert-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px;border-left:4px solid var(--border);transition:box-shadow 0.15s}
+.alert-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.08)}
+.alert-card.al-red{border-left-color:var(--red)}
+.alert-card.al-yellow{border-left-color:var(--yellow)}
+.alert-card.al-green{border-left-color:var(--accent)}
+.alert-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px}
+.alert-mun{font-weight:600;font-size:14px;color:var(--text)}
+.alert-dias{font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;white-space:nowrap;flex-shrink:0}
+.al-red .alert-dias{background:var(--red-light);color:var(--red)}
+.al-yellow .alert-dias{background:var(--yellow-light);color:#92400E}
+.al-green .alert-dias{background:var(--accent-light);color:var(--accent)}
+.alert-projeto{font-size:12px;color:var(--text2);margin-bottom:6px;line-height:1.4}
+.alert-meta{display:flex;gap:12px;flex-wrap:wrap}
+.alert-meta-item{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:3px}
+.alert-date{font-size:12px;font-weight:500;color:var(--text2)}
+.alert-regiao{font-size:11px;color:var(--text3)}
+.alert-empty{text-align:center;padding:40px 20px;color:var(--text3);font-size:14px;grid-column:1/-1}
+
+/* ── BLOCO 3: MODO MUNICÍPIO ── */
+.mun-search-wrap{position:relative;margin-bottom:20px}
+.mun-search-input{width:100%;padding:14px 18px;font-family:'DM Sans',sans-serif;font-size:16px;color:var(--text);background:var(--surface);border:2px solid var(--border);border-radius:var(--radius-lg);outline:none;transition:border-color 0.15s}
+.mun-search-input:focus{border-color:var(--accent)}
+.mun-search-input::placeholder{color:var(--text3)}
+.mun-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:50;max-height:260px;overflow-y:auto;display:none}
+.mun-dropdown.open{display:block}
+.mun-option{padding:10px 16px;font-size:13px;cursor:pointer;color:var(--text);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.mun-option:hover{background:var(--bg)}
+.mun-option-reg{font-size:11px;color:var(--text3)}
+
+.briefing-wrap{display:none}
+.briefing-wrap.open{display:block}
+.briefing-header{background:var(--accent);border-radius:var(--radius-lg);padding:22px 24px;margin-bottom:20px;color:#fff;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.briefing-mun-name{font-family:'Syne',sans-serif;font-size:24px;font-weight:700}
+.briefing-mun-reg{font-size:13px;color:rgba(255,255,255,0.7);margin-top:3px}
+.briefing-close{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;padding:6px 14px;border-radius:8px;cursor:pointer;flex-shrink:0}
+.briefing-close:hover{background:rgba(255,255,255,0.25)}
+
+.briefing-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.bm-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
+.bm-label{font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:var(--text3);margin-bottom:6px;font-weight:500}
+.bm-value{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--text);line-height:1}
+.bm-sub{font-size:10px;color:var(--text3);margin-top:3px}
+
+.briefing-sections{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.bs-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px}
+.bs-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.bs-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+.item-entrega{padding:10px 0;border-bottom:1px solid var(--surface2)}
+.item-entrega:last-child{border-bottom:none}
+.item-entrega-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:4px}
+.item-entrega-nome{font-size:13px;font-weight:500;color:var(--text);line-height:1.3}
+.item-entrega-data{font-size:11px;color:var(--text3);white-space:nowrap;flex-shrink:0}
+.item-entrega-prod{font-size:12px;color:var(--text2);line-height:1.4;margin-bottom:4px}
+.item-entrega-meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+.viagem-card{background:var(--accent-light);border:1px solid #A7D7C5;border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.viagem-card-title{font-size:12px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:4px}
+.viagem-card-datas{font-family:'Syne',sans-serif;font-size:16px;font-weight:600;color:var(--accent)}
+.viagem-card-sede{font-size:12px;color:var(--text2);margin-top:2px}
+
+.empty-state{text-align:center;padding:30px 20px;color:var(--text3);font-size:13px}
+
+/* ── PAINEL PRINCIPAL (visão geral) ── */
+.filters-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:20px}
+.filters-title{font-family:'Syne',sans-serif;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:10px}
+.filters-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.filter-group label{font-size:11px;color:var(--text2);display:block;margin-bottom:3px;font-weight:500}
+.filter-group select{width:100%;padding:7px 26px 7px 9px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:8px;outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%236B6860' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 7px center}
 .filter-group select:focus{border-color:var(--accent)}
-.filter-actions{display:flex;align-items:flex-end;gap:8px}
-.btn-clear{padding:8px 14px;font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text2);background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;white-space:nowrap;height:36px}
+.filter-actions{display:flex;align-items:flex-end}
+.btn-clear{padding:7px 12px;font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text2);background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;white-space:nowrap;height:32px}
 .btn-clear:hover{background:var(--border)}
-.filter-count{font-size:12px;color:var(--text3);margin-top:10px;border-top:1px solid var(--border);padding-top:10px}
+.filter-count{font-size:11px;color:var(--text3);margin-top:8px;border-top:1px solid var(--border);padding-top:8px}
 .filter-count span{color:var(--accent);font-weight:500}
 
-/* STATUS PILLS */
-.status-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
-.status-pill{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:6px 14px;font-size:12px;color:var(--text2);cursor:pointer;transition:all 0.15s}
+.status-row{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:18px}
+.status-pill{display:flex;align-items:center;gap:5px;background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:5px 12px;font-size:12px;color:var(--text2);cursor:pointer;transition:all 0.15s}
 .status-pill:hover,.status-pill.active{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
-.status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .dot-green{background:#2E9E6B}.dot-orange{background:#C8602A}.dot-blue{background:#2A5C8A}.dot-gray{background:#9E9C97}
-.status-pill .count{font-weight:600;color:var(--text);margin-left:2px}
+.status-pill .count{font-weight:600;color:var(--text);margin-left:1px}
 
-/* METRICS */
-.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
-.metric-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;position:relative;overflow:hidden}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+.metric-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px;position:relative;overflow:hidden}
 .metric-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
 .metric-card.m-green::before{background:var(--accent)}
 .metric-card.m-orange::before{background:var(--accent2)}
-.metric-card.m-yellow::before{background:var(--yellow)}
+.metric-card.m-yellow::before{background:#C8A520}
 .metric-card.m-blue::before{background:var(--blue)}
-.metric-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;font-weight:500;margin-bottom:8px}
-.metric-value{font-family:'Syne',sans-serif;font-size:28px;font-weight:700;color:var(--text);line-height:1}
-.metric-sub{font-size:11px;color:var(--text3);margin-top:5px}
+.metric-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;font-weight:500;margin-bottom:6px}
+.metric-value{font-family:'Syne',sans-serif;font-size:26px;font-weight:700;color:var(--text);line-height:1}
+.metric-sub{font-size:10px;color:var(--text3);margin-top:4px}
 
-/* CHARTS */
-.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px}
-.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px}
-.chart-card-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;color:var(--text);margin-bottom:16px}
-.bar-item{margin-bottom:10px}
-.bar-row{display:flex;align-items:center;gap:8px}
-.bar-label{font-size:12px;color:var(--text2);width:150px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bar-track{flex:1;height:8px;background:var(--surface2);border-radius:4px;overflow:hidden}
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px}
+.chart-card-title{font-family:'Syne',sans-serif;font-size:12px;font-weight:600;color:var(--text);margin-bottom:14px}
+.bar-item{margin-bottom:8px}
+.bar-row{display:flex;align-items:center;gap:7px}
+.bar-label{font-size:11px;color:var(--text2);width:145px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-track{flex:1;height:7px;background:var(--surface2);border-radius:4px;overflow:hidden}
 .bar-fill{height:100%;border-radius:4px;transition:width 0.5s ease}
-.bar-val{font-size:11px;color:var(--text3);width:36px;text-align:right;flex-shrink:0}
+.bar-val{font-size:11px;color:var(--text3);width:32px;text-align:right;flex-shrink:0}
 
-/* TABLE */
 .table-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
-.table-header{padding:18px 20px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:10px}
+.table-header{padding:16px 20px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px}
 .table-header-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:600}
-.search-input{padding:7px 12px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:8px;outline:none;width:240px}
+.search-input{padding:7px 12px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:8px;outline:none;width:220px}
 .search-input:focus{border-color:var(--accent)}
-.table-wrap{overflow-x:auto;max-height:500px;overflow-y:auto}
-table{width:100%;border-collapse:collapse;font-size:12.5px}
+.table-wrap{overflow-x:auto;max-height:480px;overflow-y:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
 thead{position:sticky;top:0;z-index:2;background:var(--surface)}
-th{padding:10px 14px;text-align:left;font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none}
+th{padding:9px 12px;text-align:left;font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none}
 th:hover{color:var(--text2)}
 th.sort-asc::after{content:' ↑'}
 th.sort-desc::after{content:' ↓'}
-td{padding:11px 14px;border-bottom:1px solid var(--surface2);vertical-align:top}
+td{padding:10px 12px;border-bottom:1px solid var(--surface2);vertical-align:top}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:var(--bg)}
 .td-mun{font-weight:500;white-space:nowrap}
-.td-projeto{font-weight:500;max-width:190px}
-.td-produto{color:var(--text2);max-width:220px;font-size:12px;line-height:1.4}
+.td-projeto{font-weight:500;max-width:180px}
+.td-produto{color:var(--text2);max-width:200px;font-size:11px;line-height:1.4}
 .td-val{font-variant-numeric:tabular-nums;white-space:nowrap}
 .td-num{font-variant-numeric:tabular-nums;color:var(--text2)}
 
-/* BADGES */
-.badge{display:inline-block;font-size:10px;font-weight:500;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.badge{display:inline-block;font-size:10px;font-weight:500;padding:2px 7px;border-radius:99px;white-space:nowrap}
 .badge-green{background:var(--accent-light);color:var(--accent)}
 .badge-orange{background:var(--accent2-light);color:var(--accent2)}
 .badge-blue{background:var(--blue-light);color:var(--blue)}
@@ -119,24 +212,27 @@ tr:hover td{background:var(--bg)}
 .tag-idene{background:#EEF2FB;color:#2A4BAA;font-size:10px;font-weight:500;padding:1px 6px;border-radius:4px}
 .tag-sedese{background:var(--accent-light);color:var(--accent);font-size:10px;font-weight:500;padding:1px 6px;border-radius:4px}
 
-/* PAGINATION */
-.table-footer{padding:12px 20px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);font-size:12px;color:var(--text3)}
-.pagination{display:flex;gap:4px}
-.page-btn{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:6px;cursor:pointer;font-size:12px;color:var(--text2);background:var(--surface);transition:all 0.1s;font-family:'DM Sans',sans-serif}
+.table-footer{padding:10px 20px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);font-size:11px;color:var(--text3)}
+.pagination{display:flex;gap:3px}
+.page-btn{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:6px;cursor:pointer;font-size:12px;color:var(--text2);background:var(--surface);transition:all 0.1s;font-family:'DM Sans',sans-serif}
 .page-btn:hover{border-color:var(--accent);color:var(--accent)}
 .page-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 .page-btn:disabled{opacity:0.4;cursor:not-allowed}
 
-/* TOOLTIP */
 .tooltip-wrap{position:relative}
 .tooltip-wrap:hover .tooltip{display:block}
 .tooltip{display:none;position:absolute;bottom:calc(100% + 6px);left:0;background:var(--text);color:#fff;font-size:11px;padding:5px 9px;border-radius:6px;white-space:normal;max-width:280px;z-index:99;line-height:1.5;pointer-events:none}
 
-@media(max-width:900px){
+@media(max-width:768px){
   .metrics{grid-template-columns:repeat(2,1fr)}
   .charts-row{grid-template-columns:1fr}
   .filters-grid{grid-template-columns:repeat(2,1fr)}
-  .header{padding:16px 18px}
+  .urgencia-strip{grid-template-columns:repeat(3,1fr)}
+  .briefing-metrics{grid-template-columns:repeat(2,1fr)}
+  .briefing-sections{grid-template-columns:1fr}
+  .header-badge{display:none}
+  .tabs{padding:0 16px;overflow-x:auto}
+  .tab{padding:10px 14px;font-size:12px}
 }
 </style>
 </head>
@@ -146,8 +242,8 @@ tr:hover td{background:var(--bg)}
   <div class="header-left">
     <div class="header-logo">SE</div>
     <div>
-      <div class="header-title">SEDESE — Painel Gov. Presente 3</div>
-      <div class="header-sub">Entregas propostas · Dados ao vivo da planilha</div>
+      <div class="header-title">Governo Presente - Sedese</div>
+      <div class="header-sub">Entregas propostas · Dados ao vivo</div>
     </div>
   </div>
   <div class="header-right">
@@ -159,6 +255,12 @@ tr:hover td{background:var(--bg)}
   </div>
 </div>
 
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('geral')">Visão Geral</div>
+  <div class="tab" onclick="switchTab('alertas')">⚡ Próximas Entregas</div>
+  <div class="tab" onclick="switchTab('municipio')">📍 Por Município</div>
+</div>
+
 <div class="container" id="main-content">
   <div class="loading-overlay" id="loading-state">
     <div class="loading-spinner"></div>
@@ -167,10 +269,10 @@ tr:hover td{background:var(--bg)}
 </div>
 
 <script>
-// ─── CONFIGURAÇÃO ────────────────────────────────────────────────────────────
-const SHEET_ID   = '1yZsTc6VtPImD8OuxhGwe7O_OE6SbMa2depVsd_tm21k';
+// ─── CONFIGURAÇÃO ─────────────────────────────────────────────────────────────
+const SHEET_ID   = '1dWZ8EBvlvakHEsZ25ViiKBq4LNWCwZEL';
 const SHEET_NAME = 'Entregas Propostas Governo Pres';
-const API_KEY    = 'AIzaSyAbRm0ZXx_QfqaGs1POd7WcykeE0fEjNtI';  // ← substitua pela sua chave
+const API_KEY    = 'COLE_SUA_API_KEY_AQUI';
 // ─────────────────────────────────────────────────────────────────────────────
 
 let RAW = [];
@@ -179,160 +281,471 @@ let currentPage = 1;
 let sortCol = null;
 let sortDir = 1;
 let activeStatus = null;
+let activeTab = 'geral';
+let activeUrgencia = null;
+let activePeriodo = 30;
 const PAGE_SIZE = 30;
 
-// ── Classificar status ───────────────────────────────────────────────────────
+// ── Parse de data (DD/MM/YYYY ou YYYY-MM-DD ou serial) ────────────────────────
+function parseDate(v) {
+  if (!v) return null;
+  if (v instanceof Date) return isNaN(v) ? null : v;
+  if (typeof v === 'number') {
+    const d = new Date(Math.round((v - 25569) * 86400 * 1000));
+    return isNaN(d) ? null : d;
+  }
+  const s = v.toString().trim();
+  // DD/MM/YYYY
+  let m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if (m) return new Date(+m[3], +m[2]-1, +m[1]);
+  // YYYY-MM-DD
+  m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (m) return new Date(+m[1], +m[2]-1, +m[3]);
+  return null;
+}
+
+function fmtDateBR(d) {
+  if (!d) return '—';
+  return d.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit', year:'numeric'});
+}
+
+// Parse "18/05 a 22/05" ou "18/5 a 24/5/2026" → start Date
+function parseViagemDate(s, year=2026) {
+  if (!s) return null;
+  const m = s.match(/(\d{1,2})[\/.](\d{1,2})/);
+  if (m) return new Date(year, +m[2]-1, +m[1]);
+  return null;
+}
+
 function classifyStatus(s) {
   if (!s) return 'A definir';
   const t = s.toLowerCase().trim();
-  if (t.includes('inauguração') || t.includes('viável') || t.startsWith('sim')) return 'Viável/Confirmada';
+  if (t.includes('inauguração') || (t.includes('viável') && !t.includes('não')) || t.startsWith('sim')) return 'Viável/Confirmada';
   if (t.includes('não viável') || t.includes('não previsto') || t.includes('entrega não')) return 'Não viável';
   if (t.includes('vistoria') || t.includes('visita')) return 'Visita/Vistoria';
   return 'A definir';
 }
 
-// ── Formatar data vinda do Sheets (serial ou string) ─────────────────────────
-function fmtDate(v) {
-  if (!v) return '—';
-  // Serial do Excel/Sheets
-  if (typeof v === 'number') {
-    const d = new Date(Math.round((v - 25569) * 86400 * 1000));
-    return d.toLocaleDateString('pt-BR');
-  }
-  // Já é string ISO ou BR
-  const iso = v.match(/^\d{4}-\d{2}-\d{2}/);
-  if (iso) {
-    const [y,m,d] = v.slice(0,10).split('-');
-    return `${d}/${m}/${y}`;
-  }
-  return v;
-}
-
-// ── Formatar valor ────────────────────────────────────────────────────────────
 function fmtVal(v) {
   if (!v || v === 0 || isNaN(v)) return '—';
   if (v >= 1e6) return 'R$ ' + (v/1e6).toFixed(1) + 'M';
   if (v >= 1e3) return 'R$ ' + (v/1e3).toFixed(0) + 'k';
   return 'R$ ' + Math.round(v).toLocaleString('pt-BR');
 }
-
 function fmtPessoas(v) {
   if (!v || v === 0) return '—';
   if (v >= 1000) return (v/1000).toFixed(1) + ' mil';
   return Math.round(v).toLocaleString('pt-BR');
 }
+function fmtPessoasNum(v) {
+  if (!v || v===0) return '—';
+  return Math.round(v).toLocaleString('pt-BR');
+}
 
-// ── Carregar dados do Google Sheets ──────────────────────────────────────────
+// ── Carregar dados ────────────────────────────────────────────────────────────
 async function loadData() {
   const btn = document.getElementById('btn-refresh');
-  btn.classList.add('loading');
-  btn.disabled = true;
+  btn.classList.add('loading'); btn.disabled = true;
+  document.getElementById('main-content').innerHTML = `
+    <div class="loading-overlay"><div class="loading-spinner"></div>
+    <div class="loading-text">Carregando dados da planilha...</div></div>`;
 
   const range = encodeURIComponent(`'${SHEET_NAME}'!A:T`);
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}?key=${API_KEY}`;
 
   try {
     const res = await fetch(url);
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.error?.message || `HTTP ${res.status}`);
-    }
+    if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message || `HTTP ${res.status}`); }
     const data = await res.json();
-    const rows = data.values || [];
-    if (rows.length < 2) throw new Error('Nenhum dado encontrado na aba.');
+    const rows = (data.values || []).slice(1);
+    if (!rows.length) throw new Error('Nenhum dado encontrado na aba.');
 
-    // Primeira linha = cabeçalhos
-    // Colunas: A=0 ID, B=1 Secretaria, C=2 Orgao, D=3 DataEntrega, E=4 Projeto,
-    //          F=5 Produto, G=6 Qtd, H=7 Municipio, I=8 Pessoas, J=9 Valor,
-    //          K=10 Origem, L=11 Obs, M=12 Macrorregiao, N=13 DataViagem,
-    //          O=14 CidadeSede, P=15 Devolutiva, Q=16 Manifestacao, R=17 ObsComp
-    RAW = rows.slice(1).map((r, idx) => ({
-      id:           r[0]  || String(idx+1),
-      orgao:        (r[2]  || '').trim(),
-      data_entrega: fmtDate(r[3]),
-      projeto:      (r[4]  || '').trim(),
-      produto:      (r[5]  || '').trim(),
-      qtd:          parseFloat(r[6])  || 0,
-      municipio:    (r[7]  || '').trim(),
-      pessoas:      parseFloat(r[8])  || 0,
-      valor:        parseFloat((r[9]  || '0').toString().replace(/[^0-9.,\-]/g,'').replace(',','.')) || 0,
-      origem:       (r[10] || '').trim(),
-      macrorregiao: (r[12] || '').trim(),
-      data_viagem:  (r[13] || '').trim(),
-      cidade_sede:  (r[14] || '').trim(),
-      devolutiva:   (r[15] || '').trim(),
-      manifestacao: (r[16] || '').trim(),
-      obs_comp:     (r[17] || '').trim(),
-      status:       classifyStatus(r[16]),
-    })).filter(r => r.municipio || r.projeto);
+    const today = new Date(); today.setHours(0,0,0,0);
+
+    RAW = rows.map((r, idx) => {
+      const dt = parseDate(r[3]);
+      const diffDias = dt ? Math.round((dt - today) / 86400000) : null;
+      return {
+        id:           r[0] || String(idx+1),
+        orgao:        (r[2]  || '').trim(),
+        data_entrega: r[3] || '',
+        data_dt:      dt,
+        diff_dias:    diffDias,
+        projeto:      (r[4]  || '').trim(),
+        produto:      (r[5]  || '').trim(),
+        qtd:          parseFloat(r[6]) || 0,
+        municipio:    (r[7]  || '').trim(),
+        pessoas:      parseFloat(r[8]) || 0,
+        valor:        parseFloat((r[9]||'0').toString().replace(/[^0-9.,\-]/g,'').replace(',','.')) || 0,
+        origem:       (r[10] || '').trim(),
+        macrorregiao: (r[12] || '').trim(),
+        data_viagem:  (r[13] || '').trim(),
+        cidade_sede:  (r[14] || '').trim(),
+        devolutiva:   (r[15] || '').trim(),
+        manifestacao: (r[16] || '').trim(),
+        obs_comp:     (r[17] || '').trim(),
+        status:       classifyStatus(r[16]),
+      };
+    }).filter(r => r.municipio || r.projeto);
 
     filtered = [...RAW];
-    activeStatus = null;
-    currentPage = 1;
-
-    // Atualiza header
-    document.getElementById('header-count').textContent = `${RAW.length} entregas · ${new Set(RAW.map(r=>r.municipio).filter(Boolean)).size} municípios`;
-
-    // Timestamp
-    const now = new Date().toLocaleString('pt-BR');
-    renderUI(now);
-
+    activeStatus = null; currentPage = 1;
+    const muns = new Set(RAW.map(r=>r.municipio).filter(Boolean)).size;
+    document.getElementById('header-count').textContent = `${RAW.length} entregas · ${muns} municípios`;
+    renderCurrentTab(new Date().toLocaleString('pt-BR'));
   } catch(e) {
-    showError(e.message);
-  } finally {
-    btn.classList.remove('loading');
-    btn.disabled = false;
+    document.getElementById('main-content').innerHTML = `
+      <div class="error-box"><strong>Não foi possível carregar os dados</strong>
+      ${e.message}<br><br>Verifique se a <code>API_KEY</code> está configurada e se a planilha está compartilhada como "qualquer pessoa com o link pode ver".</div>`;
+  } finally { btn.classList.remove('loading'); btn.disabled = false; }
+}
+
+// ── Tabs ──────────────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    const ids = ['geral','alertas','municipio'];
+    t.classList.toggle('active', ids[i] === tab);
+  });
+  if (RAW.length) renderCurrentTab();
+}
+
+function renderCurrentTab(timestamp) {
+  if (activeTab === 'geral')      renderGeral(timestamp);
+  else if (activeTab === 'alertas')   renderAlertas(timestamp);
+  else if (activeTab === 'municipio') renderMunicipio(timestamp);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// BLOCO 1 — ALERTAS / PRÓXIMAS ENTREGAS
+// ═══════════════════════════════════════════════════════════════════════════════
+function renderAlertas(timestamp) {
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  document.getElementById('main-content').innerHTML = `
+    ${timestamp ? `<div class="last-update">Última atualização: <span>${timestamp}</span></div>` : ''}
+    <div class="alertas-header">
+      <h2>⚡ Próximas Entregas</h2>
+      <p>Entregas ordenadas por proximidade da data — clique nos cartões de urgência para filtrar</p>
+    </div>
+    <div class="periodo-btns">
+      <button class="periodo-btn ${activePeriodo===7?'active':''}" onclick="setPeriodo(7)">Esta semana (7 dias)</button>
+      <button class="periodo-btn ${activePeriodo===15?'active':''}" onclick="setPeriodo(15)">15 dias</button>
+      <button class="periodo-btn ${activePeriodo===30?'active':''}" onclick="setPeriodo(30)">30 dias</button>
+      <button class="periodo-btn ${activePeriodo===60?'active':''}" onclick="setPeriodo(60)">60 dias</button>
+      <button class="periodo-btn ${activePeriodo===999?'active':''}" onclick="setPeriodo(999)">Todas as futuras</button>
+    </div>
+    <div class="urgencia-strip">
+      <div class="urgencia-card urg-red ${activeUrgencia==='red'?'urg-active':''}" onclick="setUrgencia('red')">
+        <div class="urgencia-label">🔴 Esta semana</div>
+        <div class="urgencia-num" id="urg-num-red">0</div>
+        <div class="urgencia-sub">entregas em até 7 dias</div>
+      </div>
+      <div class="urgencia-card urg-yellow ${activeUrgencia==='yellow'?'urg-active':''}" onclick="setUrgencia('yellow')">
+        <div class="urgencia-label">🟡 Em breve</div>
+        <div class="urgencia-num" id="urg-num-yellow">0</div>
+        <div class="urgencia-sub">entregas em 8 a 30 dias</div>
+      </div>
+      <div class="urgencia-card urg-green ${activeUrgencia==='green'?'urg-active':''}" onclick="setUrgencia('green')">
+        <div class="urgencia-label">🟢 Programadas</div>
+        <div class="urgencia-num" id="urg-num-green">0</div>
+        <div class="urgencia-sub">entregas em 31+ dias</div>
+      </div>
+    </div>
+    <div id="alert-list-wrap"></div>`;
+
+  buildAlertList();
+}
+
+function setPeriodo(p) {
+  activePeriodo = p;
+  activeUrgencia = null;
+  renderAlertas();
+}
+
+function setUrgencia(u) {
+  activeUrgencia = activeUrgencia === u ? null : u;
+  renderAlertas();
+}
+
+function buildAlertList() {
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  // Filtrar por período selecionado
+  let pool = RAW.filter(r => {
+    if (!r.data_dt) return false;
+    const diff = r.diff_dias;
+    if (diff < 0) return false; // passadas
+    if (activePeriodo !== 999 && diff > activePeriodo) return false;
+    return true;
+  });
+
+  // Contar urgências (sobre o pool do período)
+  const red    = pool.filter(r => r.diff_dias <= 7).length;
+  const yellow = pool.filter(r => r.diff_dias > 7 && r.diff_dias <= 30).length;
+  const green  = pool.filter(r => r.diff_dias > 30).length;
+
+  const setN = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
+  setN('urg-num-red', red);
+  setN('urg-num-yellow', yellow);
+  setN('urg-num-green', green);
+
+  // Filtrar por urgência clicada
+  if (activeUrgencia === 'red')    pool = pool.filter(r => r.diff_dias <= 7);
+  else if (activeUrgencia === 'yellow') pool = pool.filter(r => r.diff_dias > 7 && r.diff_dias <= 30);
+  else if (activeUrgencia === 'green')  pool = pool.filter(r => r.diff_dias > 30);
+
+  // Ordenar por data mais próxima
+  pool.sort((a,b) => a.diff_dias - b.diff_dias);
+
+  const wrap = document.getElementById('alert-list-wrap');
+  if (!pool.length) {
+    wrap.innerHTML = `<div class="alert-list"><div class="alert-empty">Nenhuma entrega encontrada para o período selecionado.</div></div>`;
+    return;
+  }
+
+  const cards = pool.slice(0, 60).map(r => {
+    const diff = r.diff_dias;
+    const cls  = diff <= 7 ? 'al-red' : diff <= 30 ? 'al-yellow' : 'al-green';
+    const diasLabel = diff === 0 ? 'Hoje!' : diff === 1 ? 'Amanhã' : `Em ${diff} dias`;
+    const dataBR = fmtDateBR(r.data_dt);
+    return `
+      <div class="alert-card ${cls}" onclick="goMunicipio('${r.municipio.replace(/'/g,"\\'")}')">
+        <div class="alert-top">
+          <div>
+            <div class="alert-mun">${r.municipio}</div>
+            <div class="alert-regiao">${r.macrorregiao}</div>
+          </div>
+          <span class="alert-dias">${diasLabel}</span>
+        </div>
+        <div class="alert-projeto">${r.projeto}${r.produto ? ' · ' + r.produto.slice(0,60) + (r.produto.length>60?'…':'') : ''}</div>
+        <div class="alert-meta">
+          <span class="alert-meta-item">📅 ${dataBR}</span>
+          ${r.data_viagem ? `<span class="alert-meta-item">✈️ Viagem: ${r.data_viagem}</span>` : ''}
+          ${r.pessoas > 0 ? `<span class="alert-meta-item">👥 ${fmtPessoasNum(r.pessoas)} pessoas</span>` : ''}
+          ${r.valor > 0 ? `<span class="alert-meta-item">💰 ${fmtVal(r.valor)}</span>` : ''}
+        </div>
+      </div>`;
+  }).join('');
+
+  wrap.innerHTML = `<div class="alert-list">${cards}</div>`;
+  if (pool.length > 60) {
+    wrap.innerHTML += `<p style="text-align:center;font-size:12px;color:var(--text3);margin-top:12px">Mostrando 60 de ${pool.length} entregas. Use os filtros de período ou urgência para refinar.</p>`;
   }
 }
 
-function showError(msg) {
+// ═══════════════════════════════════════════════════════════════════════════════
+// BLOCO 3 — MODO MUNICÍPIO
+// ═══════════════════════════════════════════════════════════════════════════════
+let selectedMun = null;
+
+function renderMunicipio(timestamp) {
+  const muns = [...new Set(RAW.map(r=>r.municipio).filter(Boolean))].sort();
+
   document.getElementById('main-content').innerHTML = `
-    <div class="error-box">
-      <strong>Não foi possível carregar os dados</strong>
-      ${msg}<br><br>
-      Verifique se a <code>API_KEY</code> foi configurada corretamente no arquivo <code>index.html</code>
-      e se a planilha está compartilhada como "qualquer pessoa com o link pode ver".
+    ${timestamp ? `<div class="last-update">Última atualização: <span>${timestamp}</span></div>` : ''}
+    <div style="margin-bottom:8px">
+      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:4px">📍 Briefing por Município</div>
+      <div style="font-size:13px;color:var(--text2)">Selecione um município para ver tudo que foi e será entregue lá.</div>
+    </div>
+    <div class="mun-search-wrap">
+      <input class="mun-search-input" id="mun-search" type="text" placeholder="Digite o nome do município..."
+        oninput="filterMunDropdown()" onfocus="openMunDropdown()" onblur="setTimeout(closeMunDropdown,200)" autocomplete="off">
+      <div class="mun-dropdown" id="mun-dropdown"></div>
+    </div>
+    <div class="briefing-wrap" id="briefing-wrap"></div>
+    <div id="mun-placeholder" style="text-align:center;padding:60px 20px;color:var(--text3)">
+      <div style="font-size:40px;margin-bottom:12px">🏙️</div>
+      <div style="font-size:15px;font-weight:500;color:var(--text2);margin-bottom:6px">Nenhum município selecionado</div>
+      <div style="font-size:13px">Pesquise acima ou venha da aba <strong>Próximas Entregas</strong> clicando em um cartão.</div>
+    </div>`;
+
+  window._munList = muns;
+  if (selectedMun) {
+    document.getElementById('mun-search').value = selectedMun;
+    showBriefing(selectedMun);
+  }
+}
+
+function filterMunDropdown() {
+  const q = document.getElementById('mun-search').value.toLowerCase();
+  openMunDropdown(q);
+}
+
+function openMunDropdown(q='') {
+  const dd = document.getElementById('mun-dropdown');
+  if (!dd) return;
+  const list = (window._munList || []).filter(m => !q || m.toLowerCase().includes(q));
+  if (!list.length) { dd.classList.remove('open'); return; }
+  dd.innerHTML = list.slice(0,12).map(m => {
+    const reg = (RAW.find(r=>r.municipio===m)||{}).macrorregiao || '';
+    return `<div class="mun-option" onmousedown="selectMun('${m.replace(/'/g,"\\'")}')">
+      <span>${m}</span><span class="mun-option-reg">${reg}</span>
+    </div>`;
+  }).join('');
+  dd.classList.add('open');
+}
+
+function closeMunDropdown() {
+  const dd = document.getElementById('mun-dropdown');
+  if (dd) dd.classList.remove('open');
+}
+
+function selectMun(m) {
+  selectedMun = m;
+  const inp = document.getElementById('mun-search');
+  if (inp) inp.value = m;
+  closeMunDropdown();
+  showBriefing(m);
+}
+
+function goMunicipio(m) {
+  selectedMun = m;
+  switchTab('municipio');
+}
+
+function showBriefing(mun) {
+  const ph = document.getElementById('mun-placeholder');
+  const bw = document.getElementById('briefing-wrap');
+  if (!ph || !bw) return;
+  ph.style.display = 'none';
+  bw.classList.add('open');
+
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  const itens = RAW.filter(r => r.municipio === mun);
+  const reg = (itens[0]||{}).macrorregiao || '';
+  const sede = (itens[0]||{}).cidade_sede || '';
+  const viagem = (itens[0]||{}).data_viagem || '';
+
+  const totalPessoas = itens.reduce((a,r)=>a+(r.pessoas||0),0);
+  const totalValor   = itens.reduce((a,r)=>a+(r.valor||0),0);
+  const futuras  = itens.filter(r => r.data_dt && r.diff_dias >= 0);
+  const passadas = itens.filter(r => r.data_dt && r.diff_dias < 0);
+  const proximas = futuras.sort((a,b)=>a.diff_dias-b.diff_dias).slice(0,5);
+  const recentes = passadas.sort((a,b)=>b.data_dt-a.data_dt).slice(0,5);
+
+  const itemHTML = (r, tipo) => {
+    const diff = r.diff_dias;
+    let badge = '';
+    if (tipo === 'futura') {
+      if (diff === 0) badge = `<span class="badge badge-orange">Hoje</span>`;
+      else if (diff <= 7) badge = `<span class="badge badge-orange">Em ${diff}d</span>`;
+      else badge = `<span class="badge badge-green">${fmtDateBR(r.data_dt)}</span>`;
+    } else {
+      badge = `<span class="badge badge-gray">${fmtDateBR(r.data_dt)}</span>`;
+    }
+    return `<div class="item-entrega">
+      <div class="item-entrega-top">
+        <div class="item-entrega-nome">${r.projeto}</div>
+        ${badge}
+      </div>
+      ${r.produto ? `<div class="item-entrega-prod">${r.produto.slice(0,80)}${r.produto.length>80?'…':''}</div>` : ''}
+      <div class="item-entrega-meta">
+        ${orgaoTag(r.orgao)}
+        ${r.pessoas>0 ? `<span style="font-size:11px;color:var(--text3)">👥 ${fmtPessoasNum(r.pessoas)}</span>` : ''}
+        ${r.valor>0 ? `<span style="font-size:11px;color:var(--text3)">💰 ${fmtVal(r.valor)}</span>` : ''}
+        <span class="badge ${r.status==='Viável/Confirmada'?'badge-green':r.status==='Não viável'?'badge-orange':'badge-gray'}">${r.status}</span>
+      </div>
+    </div>`;
+  };
+
+  bw.innerHTML = `
+    <div class="briefing-header">
+      <div>
+        <div class="briefing-mun-name">${mun}</div>
+        <div class="briefing-mun-reg">${reg}${sede?' · Sede: '+sede:''}</div>
+      </div>
+      <button class="briefing-close" onclick="closeBriefing()">✕ Fechar</button>
+    </div>
+
+    <div class="briefing-metrics">
+      <div class="bm-card">
+        <div class="bm-label">Total de entregas</div>
+        <div class="bm-value">${itens.length}</div>
+        <div class="bm-sub">${futuras.length} futuras · ${passadas.length} realizadas</div>
+      </div>
+      <div class="bm-card">
+        <div class="bm-label">Projetos distintos</div>
+        <div class="bm-value">${new Set(itens.map(r=>r.projeto).filter(Boolean)).size}</div>
+        <div class="bm-sub">iniciativas ativas</div>
+      </div>
+      <div class="bm-card">
+        <div class="bm-label">Pessoas estimadas</div>
+        <div class="bm-value">${fmtPessoas(totalPessoas)||'—'}</div>
+        <div class="bm-sub">total de atendidos</div>
+      </div>
+      <div class="bm-card">
+        <div class="bm-label">Investimento</div>
+        <div class="bm-value">${fmtVal(totalValor)||'—'}</div>
+        <div class="bm-sub">soma informada</div>
+      </div>
+    </div>
+
+    ${viagem ? `
+    <div class="viagem-card">
+      <div class="viagem-card-title">✈️ Viagem programada na região</div>
+      <div class="viagem-card-datas">${viagem}</div>
+      ${sede ? `<div class="viagem-card-sede">Cidade sede: ${sede}</div>` : ''}
+    </div>` : ''}
+
+    <div class="briefing-sections">
+      <div class="bs-card">
+        <div class="bs-title"><span class="bs-dot" style="background:#2E9E6B"></span>Próximas entregas (${futuras.length})</div>
+        ${proximas.length ? proximas.map(r=>itemHTML(r,'futura')).join('') : '<div class="empty-state">Nenhuma entrega futura registrada.</div>'}
+        ${futuras.length > 5 ? `<div style="font-size:11px;color:var(--text3);margin-top:10px;text-align:center">+${futuras.length-5} mais no painel geral</div>` : ''}
+      </div>
+      <div class="bs-card">
+        <div class="bs-title"><span class="bs-dot" style="background:#9E9C97"></span>Entregas realizadas / passadas (${passadas.length})</div>
+        ${recentes.length ? recentes.map(r=>itemHTML(r,'passada')).join('') : '<div class="empty-state">Nenhuma entrega passada registrada.</div>'}
+        ${passadas.length > 5 ? `<div style="font-size:11px;color:var(--text3);margin-top:10px;text-align:center">+${passadas.length-5} mais no painel geral</div>` : ''}
+      </div>
     </div>`;
 }
 
-// ── Renderizar toda a UI ──────────────────────────────────────────────────────
-function renderUI(timestamp) {
-  document.getElementById('main-content').innerHTML = `
-    <div class="last-update">Última atualização: <span>${timestamp}</span></div>
+function closeBriefing() {
+  selectedMun = null;
+  const bw = document.getElementById('briefing-wrap');
+  const ph = document.getElementById('mun-placeholder');
+  if (bw) { bw.classList.remove('open'); bw.innerHTML = ''; }
+  if (ph) ph.style.display = 'block';
+  const inp = document.getElementById('mun-search');
+  if (inp) inp.value = '';
+}
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// VISÃO GERAL
+// ═══════════════════════════════════════════════════════════════════════════════
+function renderGeral(timestamp) {
+  document.getElementById('main-content').innerHTML = `
+    ${timestamp ? `<div class="last-update">Última atualização: <span>${timestamp}</span></div>` : ''}
     <div class="filters-bar">
       <div class="filters-title">Filtros</div>
       <div class="filters-grid">
-        <div class="filter-group">
-          <label>Macrorregião</label>
-          <select id="f-macro" onchange="applyFilters()"><option value="">Todas</option></select>
-        </div>
-        <div class="filter-group">
-          <label>Cidade Sede</label>
-          <select id="f-sede" onchange="applyFilters()"><option value="">Todas</option></select>
-        </div>
-        <div class="filter-group">
-          <label>Projeto / Iniciativa</label>
-          <select id="f-projeto" onchange="applyFilters()"><option value="">Todos</option></select>
-        </div>
-        <div class="filter-group">
-          <label>Órgão</label>
+        <div class="filter-group"><label>Macrorregião</label>
+          <select id="f-macro" onchange="applyFilters()"><option value="">Todas</option></select></div>
+        <div class="filter-group"><label>Cidade Sede</label>
+          <select id="f-sede" onchange="applyFilters()"><option value="">Todas</option></select></div>
+        <div class="filter-group"><label>Projeto</label>
+          <select id="f-projeto" onchange="applyFilters()"><option value="">Todos</option></select></div>
+        <div class="filter-group"><label>Órgão</label>
           <select id="f-orgao" onchange="applyFilters()">
             <option value="">Todos</option>
             <option value="SEDESE">SEDESE</option>
             <option value="IDENE">IDENE</option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <label>Origem do Recurso</label>
-          <select id="f-origem" onchange="applyFilters()"><option value="">Todas</option></select>
-        </div>
+          </select></div>
+        <div class="filter-group"><label>Período</label>
+          <select id="f-periodo" onchange="applyFilters()">
+            <option value="">Todo o período</option>
+            <option value="7">Próximos 7 dias</option>
+            <option value="15">Próximos 15 dias</option>
+            <option value="30">Próximos 30 dias</option>
+            <option value="60">Próximos 60 dias</option>
+          </select></div>
         <div class="filter-actions">
-          <label style="visibility:hidden;font-size:11px">‎</label>
-          <button class="btn-clear" onclick="clearFilters()">Limpar filtros</button>
+          <button class="btn-clear" onclick="clearFilters()">Limpar</button>
         </div>
       </div>
-      <div class="filter-count">Exibindo <span id="count-shown">${RAW.length}</span> de <span>${RAW.length}</span> entregas</div>
+      <div class="filter-count">Exibindo <span id="count-shown">${RAW.length}</span> de ${RAW.length} entregas</div>
     </div>
 
     <div class="status-row" id="status-pills"></div>
@@ -349,14 +762,14 @@ function renderUI(timestamp) {
         <div class="metric-sub">municípios únicos</div>
       </div>
       <div class="metric-card m-yellow">
-        <div class="metric-label">Estimativa de atendidos</div>
+        <div class="metric-label">Estimativa atendidos</div>
         <div class="metric-value" id="m-pessoas">${fmtPessoas(RAW.reduce((a,r)=>a+(r.pessoas||0),0))}</div>
         <div class="metric-sub">pessoas estimadas</div>
       </div>
       <div class="metric-card m-orange">
         <div class="metric-label">Investimento total</div>
         <div class="metric-value" id="m-valor">${fmtVal(RAW.reduce((a,r)=>a+(r.valor||0),0))}</div>
-        <div class="metric-sub">soma dos valores informados</div>
+        <div class="metric-sub">soma informada</div>
       </div>
     </div>
 
@@ -378,20 +791,18 @@ function renderUI(timestamp) {
       </div>
       <div class="table-wrap">
         <table>
-          <thead>
-            <tr>
-              <th onclick="sortBy('municipio')">Município</th>
-              <th onclick="sortBy('macrorregiao')">Macrorregião</th>
-              <th onclick="sortBy('projeto')">Projeto</th>
-              <th>Produto</th>
-              <th onclick="sortBy('orgao')">Órgão</th>
-              <th onclick="sortBy('data_entrega')">Data entrega</th>
-              <th>Viagem na região</th>
-              <th onclick="sortBy('pessoas')">Atendidos</th>
-              <th onclick="sortBy('valor')">Valor (R$)</th>
-              <th onclick="sortBy('status')">Status</th>
-            </tr>
-          </thead>
+          <thead><tr>
+            <th onclick="sortBy('municipio')">Município</th>
+            <th onclick="sortBy('macrorregiao')">Macrorregião</th>
+            <th onclick="sortBy('projeto')">Projeto</th>
+            <th>Produto</th>
+            <th onclick="sortBy('orgao')">Órgão</th>
+            <th onclick="sortBy('data_dt')">Data entrega</th>
+            <th>Viagem</th>
+            <th onclick="sortBy('pessoas')">Atendidos</th>
+            <th onclick="sortBy('valor')">Valor</th>
+            <th onclick="sortBy('status')">Status</th>
+          </tr></thead>
           <tbody id="table-body"></tbody>
         </table>
       </div>
@@ -408,227 +819,157 @@ function renderUI(timestamp) {
   renderTable();
 }
 
-// ── Selects ───────────────────────────────────────────────────────────────────
 function getUnique(key) {
-  return [...new Set(RAW.map(r => r[key]).filter(Boolean).map(s => s.trim()))].sort();
+  return [...new Set(RAW.map(r=>r[key]).filter(Boolean).map(s=>s.trim()))].sort();
 }
-
 function populateSelects() {
-  const fill = (id, values) => {
-    const sel = document.getElementById(id);
-    if (!sel) return;
-    values.forEach(v => {
-      const o = document.createElement('option');
-      o.value = v; o.textContent = v; sel.appendChild(o);
-    });
+  const fill = (id, vals) => {
+    const sel = document.getElementById(id); if(!sel) return;
+    vals.forEach(v => { const o=document.createElement('option'); o.value=v; o.textContent=v; sel.appendChild(o); });
   };
-  fill('f-macro',   getUnique('macrorregiao'));
-  fill('f-sede',    getUnique('cidade_sede'));
+  fill('f-macro', getUnique('macrorregiao'));
+  fill('f-sede',  getUnique('cidade_sede'));
   fill('f-projeto', getUnique('projeto'));
-  fill('f-origem',  getUnique('origem'));
 }
 
-// ── Filtros ───────────────────────────────────────────────────────────────────
 function applyFilters() {
-  const macro   = (document.getElementById('f-macro')   || {}).value || '';
-  const sede    = (document.getElementById('f-sede')    || {}).value || '';
-  const proj    = (document.getElementById('f-projeto') || {}).value || '';
-  const orgao   = (document.getElementById('f-orgao')   || {}).value || '';
-  const origem  = (document.getElementById('f-origem')  || {}).value || '';
-  const q       = ((document.getElementById('search')   || {}).value || '').toLowerCase().trim();
+  const g = id => (document.getElementById(id)||{}).value||'';
+  const macro  = g('f-macro'), sede = g('f-sede'), proj = g('f-projeto');
+  const orgao  = g('f-orgao'), periodo = g('f-periodo');
+  const q = (g('search')).toLowerCase().trim();
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
 
   filtered = RAW.filter(r => {
-    if (macro   && r.macrorregiao.trim() !== macro)  return false;
-    if (sede    && r.cidade_sede.trim()  !== sede)   return false;
-    if (proj    && r.projeto.trim()      !== proj)   return false;
-    if (orgao   && r.orgao.trim()        !== orgao)  return false;
-    if (origem  && r.origem.trim()       !== origem) return false;
-    if (activeStatus && r.status !== activeStatus)   return false;
-    if (q) {
-      const hay = (r.municipio + r.projeto + r.produto + r.macrorregiao + r.cidade_sede).toLowerCase();
-      if (!hay.includes(q)) return false;
+    if (macro  && r.macrorregiao.trim()!==macro)  return false;
+    if (sede   && r.cidade_sede.trim() !==sede)   return false;
+    if (proj   && r.projeto.trim()     !==proj)   return false;
+    if (orgao  && r.orgao.trim()       !==orgao)  return false;
+    if (periodo) {
+      if (!r.data_dt || r.diff_dias < 0 || r.diff_dias > parseInt(periodo)) return false;
     }
+    if (activeStatus && r.status !== activeStatus) return false;
+    if (q) { const hay=(r.municipio+r.projeto+r.produto+r.macrorregiao).toLowerCase(); if(!hay.includes(q)) return false; }
     return true;
   });
-
   currentPage = 1;
-  const cs = document.getElementById('count-shown');
-  if (cs) cs.textContent = filtered.length;
-  renderStatusPills();
-  renderMetrics();
-  renderCharts();
-  renderTable();
+  const cs = document.getElementById('count-shown'); if(cs) cs.textContent = filtered.length;
+  renderStatusPills(); renderMetrics(); renderCharts(); renderTable();
 }
 
 function clearFilters() {
-  ['f-macro','f-sede','f-projeto','f-orgao','f-origem'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
-  });
-  const s = document.getElementById('search');
-  if (s) s.value = '';
-  activeStatus = null;
-  filtered = [...RAW];
-  currentPage = 1;
-  applyFilters();
+  ['f-macro','f-sede','f-projeto','f-orgao','f-periodo'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  const s=document.getElementById('search'); if(s) s.value='';
+  activeStatus=null; filtered=[...RAW]; currentPage=1; applyFilters();
 }
 
-function toggleStatus(s) {
-  activeStatus = activeStatus === s ? null : s;
-  applyFilters();
-}
+function toggleStatus(s) { activeStatus = activeStatus===s?null:s; applyFilters(); }
 
-// ── Status pills ──────────────────────────────────────────────────────────────
 function renderStatusPills() {
-  const el = document.getElementById('status-pills');
-  if (!el) return;
-  const cnt = {};
-  filtered.forEach(r => { cnt[r.status] = (cnt[r.status]||0)+1; });
-  const defs = [
-    { key:'Viável/Confirmada', label:'Viável / Confirmada', dot:'dot-green' },
-    { key:'Visita/Vistoria',   label:'Visita / Vistoria',   dot:'dot-blue'  },
-    { key:'A definir',         label:'A definir',           dot:'dot-gray'  },
-    { key:'Não viável',        label:'Não viável',          dot:'dot-orange'},
+  const el = document.getElementById('status-pills'); if(!el) return;
+  const cnt = {}; filtered.forEach(r=>{cnt[r.status]=(cnt[r.status]||0)+1;});
+  const defs=[
+    {key:'Viável/Confirmada',label:'Viável / Confirmada',dot:'dot-green'},
+    {key:'Visita/Vistoria',label:'Visita / Vistoria',dot:'dot-blue'},
+    {key:'A definir',label:'A definir',dot:'dot-gray'},
+    {key:'Não viável',label:'Não viável',dot:'dot-orange'},
   ];
-  el.innerHTML = defs.map(d =>
-    `<div class="status-pill${activeStatus===d.key?' active':''}" data-status="${d.key}" onclick="toggleStatus('${d.key}')">
-       <span class="status-dot ${d.dot}"></span>${d.label}<span class="count">${cnt[d.key]||0}</span>
-     </div>`
-  ).join('');
+  el.innerHTML = defs.map(d=>`
+    <div class="status-pill${activeStatus===d.key?' active':''}" onclick="toggleStatus('${d.key}')">
+      <span class="status-dot ${d.dot}"></span>${d.label}<span class="count">${cnt[d.key]||0}</span>
+    </div>`).join('');
 }
 
-// ── Métricas ──────────────────────────────────────────────────────────────────
 function renderMetrics() {
-  const set = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
+  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
   set('m-total', filtered.length);
   set('m-mun',   new Set(filtered.map(r=>r.municipio).filter(Boolean)).size);
   set('m-pessoas', fmtPessoas(filtered.reduce((a,r)=>a+(r.pessoas||0),0)));
   set('m-valor',   fmtVal(filtered.reduce((a,r)=>a+(r.valor||0),0)));
 }
 
-// ── Gráficos ──────────────────────────────────────────────────────────────────
-const BAR_COLORS = ['#1B4D3E','#2E9E6B','#5DC49A','#A8DFC8','#2A5C8A','#6B9EC8','#C8602A','#E8925A'];
-
-function renderBar(label, val, max, color) {
-  const pct = max > 0 ? Math.round((val/max)*100) : 0;
-  return `<div class="bar-item">
-    <div class="bar-row">
-      <span class="bar-label" title="${label}">${label}</span>
-      <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${color}"></div></div>
-      <span class="bar-val">${val}</span>
-    </div>
-  </div>`;
+const BAR_COLORS=['#1B4D3E','#2E9E6B','#5DC49A','#A8DFC8','#2A5C8A','#6B9EC8','#C8602A','#E8925A'];
+function renderBar(label,val,max,color) {
+  const pct=max>0?Math.round((val/max)*100):0;
+  return `<div class="bar-item"><div class="bar-row">
+    <span class="bar-label" title="${label}">${label}</span>
+    <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${color}"></div></div>
+    <span class="bar-val">${val}</span>
+  </div></div>`;
 }
-
 function renderCharts() {
-  const macro = {};
-  filtered.forEach(r => { if(r.macrorregiao) macro[r.macrorregiao]=(macro[r.macrorregiao]||0)+1; });
-  const ms = Object.entries(macro).sort((a,b)=>b[1]-a[1]).slice(0,8);
-  const mm = ms[0]?ms[0][1]:1;
-  const mEl = document.getElementById('chart-macro');
-  if (mEl) mEl.innerHTML = ms.map(([k,v],i)=>renderBar(k,v,mm,BAR_COLORS[i%BAR_COLORS.length])).join('') || '<p style="font-size:13px;color:var(--text3)">Sem dados</p>';
-
-  const proj = {};
-  filtered.forEach(r => {
-    if (!r.projeto) return;
-    const k = r.projeto.length > 32 ? r.projeto.slice(0,32)+'…' : r.projeto;
-    proj[k] = (proj[k]||0)+1;
-  });
-  const ps = Object.entries(proj).sort((a,b)=>b[1]-a[1]).slice(0,8);
-  const pm = ps[0]?ps[0][1]:1;
-  const pEl = document.getElementById('chart-proj');
-  if (pEl) pEl.innerHTML = ps.map(([k,v],i)=>renderBar(k,v,pm,BAR_COLORS[i%BAR_COLORS.length])).join('') || '<p style="font-size:13px;color:var(--text3)">Sem dados</p>';
+  const macro={};
+  filtered.forEach(r=>{if(r.macrorregiao) macro[r.macrorregiao]=(macro[r.macrorregiao]||0)+1;});
+  const ms=Object.entries(macro).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const mEl=document.getElementById('chart-macro');
+  if(mEl) mEl.innerHTML=ms.map(([k,v],i)=>renderBar(k,v,ms[0][1],BAR_COLORS[i%BAR_COLORS.length])).join('')||'<p style="font-size:12px;color:var(--text3)">Sem dados</p>';
+  const proj={};
+  filtered.forEach(r=>{if(!r.projeto)return;const k=r.projeto.length>32?r.projeto.slice(0,32)+'…':r.projeto;proj[k]=(proj[k]||0)+1;});
+  const ps=Object.entries(proj).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const pEl=document.getElementById('chart-proj');
+  if(pEl) pEl.innerHTML=ps.map(([k,v],i)=>renderBar(k,v,ps[0]?ps[0][1]:1,BAR_COLORS[i%BAR_COLORS.length])).join('')||'<p style="font-size:12px;color:var(--text3)">Sem dados</p>';
 }
 
-// ── Tabela ────────────────────────────────────────────────────────────────────
 function statusBadge(s) {
-  const map = {
-    'Viável/Confirmada':['badge-green','Viável'],
-    'Visita/Vistoria':  ['badge-blue','Visita'],
-    'A definir':        ['badge-gray','A definir'],
-    'Não viável':       ['badge-orange','Não viável'],
-  };
-  const [cls,lbl] = map[s]||['badge-gray',s];
+  const map={'Viável/Confirmada':['badge-green','Viável'],'Visita/Vistoria':['badge-blue','Visita'],'A definir':['badge-gray','A definir'],'Não viável':['badge-orange','Não viável']};
+  const [cls,lbl]=map[s]||['badge-gray',s];
   return `<span class="badge ${cls}">${lbl}</span>`;
 }
-
 function orgaoTag(o) {
-  return o === 'IDENE'
-    ? `<span class="tag-idene">IDENE</span>`
-    : `<span class="tag-sedese">SEDESE</span>`;
+  return o==='IDENE'?`<span class="tag-idene">IDENE</span>`:`<span class="tag-sedese">SEDESE</span>`;
 }
 
 function sortBy(col) {
-  if (sortCol === col) sortDir *= -1;
-  else { sortCol = col; sortDir = 1; }
-  filtered.sort((a,b) => {
-    let va = a[col]||'', vb = b[col]||'';
-    if (typeof va === 'number') return (va - vb) * sortDir;
-    return va.toString().localeCompare(vb.toString(), 'pt-BR') * sortDir;
+  if(sortCol===col) sortDir*=-1; else{sortCol=col;sortDir=1;}
+  filtered.sort((a,b)=>{
+    let va=a[col]??'', vb=b[col]??'';
+    if(va instanceof Date && vb instanceof Date) return (va-vb)*sortDir;
+    if(typeof va==='number') return (va-vb)*sortDir;
+    return va.toString().localeCompare(vb.toString(),'pt-BR')*sortDir;
   });
-  currentPage = 1;
-  renderTable();
-  // Update header arrows
-  document.querySelectorAll('th').forEach(th => {
+  currentPage=1; renderTable();
+  document.querySelectorAll('th').forEach(th=>{
     th.classList.remove('sort-asc','sort-desc');
-    if (th.getAttribute('onclick') === `sortBy('${col}')`) {
-      th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
-    }
+    if(th.getAttribute('onclick')===`sortBy('${col}')`) th.classList.add(sortDir===1?'sort-asc':'sort-desc');
   });
 }
 
 function renderTable() {
-  const total = filtered.length;
-  const totalPages = Math.max(1, Math.ceil(total/PAGE_SIZE));
-  currentPage = Math.min(currentPage, totalPages);
-  const rows = filtered.slice((currentPage-1)*PAGE_SIZE, currentPage*PAGE_SIZE);
+  const total=filtered.length;
+  const totalPages=Math.max(1,Math.ceil(total/PAGE_SIZE));
+  currentPage=Math.min(currentPage,totalPages);
+  const rows=filtered.slice((currentPage-1)*PAGE_SIZE, currentPage*PAGE_SIZE);
+  const tbody=document.getElementById('table-body'); if(!tbody) return;
+  tbody.innerHTML=rows.map(r=>`<tr>
+    <td class="td-mun" style="cursor:pointer;text-decoration:underline dotted;color:var(--accent)" onclick="goMunicipio('${r.municipio.replace(/'/g,"\\'")}')">${r.municipio||'—'}</td>
+    <td style="font-size:11px;color:var(--text3);white-space:nowrap">${r.macrorregiao||'—'}</td>
+    <td class="td-projeto tooltip-wrap">${r.projeto.length>35?r.projeto.slice(0,35)+'…':r.projeto}${r.projeto.length>35?`<span class="tooltip">${r.projeto}</span>`:''}</td>
+    <td class="td-produto tooltip-wrap">${r.produto.length>55?r.produto.slice(0,55)+'…':r.produto}${r.produto.length>55?`<span class="tooltip">${r.produto}</span>`:''}</td>
+    <td>${orgaoTag(r.orgao)}</td>
+    <td class="td-num" style="white-space:nowrap">${fmtDateBR(r.data_dt)||'—'}</td>
+    <td style="font-size:11px;color:var(--text3);white-space:nowrap">${r.data_viagem||'—'}</td>
+    <td class="td-num">${r.pessoas>0?Math.round(r.pessoas).toLocaleString('pt-BR'):'—'}</td>
+    <td class="td-val">${fmtVal(r.valor)}</td>
+    <td>${statusBadge(r.status)}</td>
+  </tr>`).join('');
 
-  const tbody = document.getElementById('table-body');
-  if (!tbody) return;
-  tbody.innerHTML = rows.map(r => `
-    <tr>
-      <td class="td-mun">${r.municipio||'—'}</td>
-      <td style="font-size:11px;color:var(--text3);white-space:nowrap">${r.macrorregiao||'—'}</td>
-      <td class="td-projeto tooltip-wrap">
-        ${r.projeto.length>35?r.projeto.slice(0,35)+'…':r.projeto}
-        ${r.projeto.length>35?`<span class="tooltip">${r.projeto}</span>`:''}
-      </td>
-      <td class="td-produto tooltip-wrap">
-        ${r.produto.length>55?r.produto.slice(0,55)+'…':r.produto}
-        ${r.produto.length>55?`<span class="tooltip">${r.produto}</span>`:''}
-      </td>
-      <td>${orgaoTag(r.orgao)}</td>
-      <td class="td-num" style="white-space:nowrap">${r.data_entrega||'—'}</td>
-      <td style="font-size:11px;color:var(--text3);white-space:nowrap">${r.data_viagem||'—'}</td>
-      <td class="td-num">${r.pessoas>0?Math.round(r.pessoas).toLocaleString('pt-BR'):'—'}</td>
-      <td class="td-val">${fmtVal(r.valor)}</td>
-      <td>${statusBadge(r.status)}</td>
-    </tr>`).join('');
-
-  const pi = document.getElementById('page-info');
-  if (pi) pi.textContent = `Página ${currentPage} de ${totalPages} · ${total} registros`;
-
-  const pag = document.getElementById('pagination');
-  if (!pag) return;
-  let html = `<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
-  const range = [];
-  for (let i=1; i<=totalPages; i++) {
-    if (i===1||i===totalPages||Math.abs(i-currentPage)<=2) range.push(i);
-    else if (range[range.length-1]!=='…') range.push('…');
-  }
-  range.forEach(p => {
-    if (p==='…') html += `<span style="padding:0 4px;color:var(--text3);font-size:12px">…</span>`;
-    else html += `<button class="page-btn${p===currentPage?' active':''}" onclick="goPage(${p})">${p}</button>`;
+  const pi=document.getElementById('page-info');
+  if(pi) pi.textContent=`Página ${currentPage} de ${totalPages} · ${total} registros`;
+  const pag=document.getElementById('pagination'); if(!pag) return;
+  let html=`<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
+  const range=[];
+  for(let i=1;i<=totalPages;i++){if(i===1||i===totalPages||Math.abs(i-currentPage)<=2)range.push(i);else if(range[range.length-1]!=='…')range.push('…');}
+  range.forEach(p=>{
+    if(p==='…') html+=`<span style="padding:0 4px;color:var(--text3);font-size:12px">…</span>`;
+    else html+=`<button class="page-btn${p===currentPage?' active':''}" onclick="goPage(${p})">${p}</button>`;
   });
-  html += `<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>›</button>`;
-  pag.innerHTML = html;
+  html+=`<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>›</button>`;
+  pag.innerHTML=html;
 }
 
-function goPage(p) {
-  const total = Math.max(1, Math.ceil(filtered.length/PAGE_SIZE));
-  if (p<1||p>total) return;
-  currentPage = p;
-  renderTable();
+function goPage(p){
+  const total=Math.max(1,Math.ceil(filtered.length/PAGE_SIZE));
+  if(p<1||p>total) return;
+  currentPage=p; renderTable();
   document.querySelector('.table-wrap')?.scrollTo(0,0);
 }
 
